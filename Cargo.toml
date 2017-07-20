@@ -3,5 +3,17 @@ name = "fits-rs"
 version = "0.1.0"
 authors = ["Daan van Berkel <daan.v.berkel.1980@gmail.com>"]
 
+description = "FITS encoder and decoder in Rust"
+documentation = "https://github.com/fifth-postulate/fits-rs"
+homepage = "https://github.com/fifth-postulate/fits-rs"
+repository = "https://github.com/fifth-postulate/fits-rs"
+readme = "README.md"
+keywords = ["image", "FITS"]
+categories = ["multimedia", "multimedia::images", "science"]
+license = "MIT"
+
+# [badges]
+# travis-ci = { repository = "...", branch = "master" }
+
 [dependencies]
 nom = "^3.1"
