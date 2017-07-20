@@ -1,4 +1,4 @@
-# fits-rs
+# fits-rs [![Build Status](https://travis-ci.org/fifth-postulate/fits-rs.svg?branch=master)](https://travis-ci.org/fifth-postulate/fits-rs)
 FITS encoder and decoder in Rust.
 
 ## FITS

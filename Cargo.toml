@@ -12,8 +12,8 @@ keywords = ["image", "FITS"]
 categories = ["multimedia", "multimedia::images", "science"]
 license = "MIT"
 
-# [badges]
-# travis-ci = { repository = "...", branch = "master" }
+[badges]
+travis-ci = { repository = "fifth-postulate / fits-rs", branch = "master" }
 
 [dependencies]
 nom = "^3.1"
