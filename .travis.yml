@@ -6,3 +6,14 @@ rust:
 matrix:
   allow_failures:
     - rust: nightly
+script:
+  - cargo build --verbose
+  - cargo test --verbose
+  - cargo doc
+after_succcess: |
+  [ $TRAVIS_BRANCH = master ] &&
+  bash deploy-documentation.sh
+env:
+  global:
+    - secure: >-
+        X3QRMlAlWojg9KuUPfTonbcIGIH29W2/OnaGsalAgAs8SXbj0GK7oOrJ0BkjD2eYCx7W6u9BACfVHBX+ocYgaj8OudnupdhMDINTJUu03/au+o+4enA+6bgoDn8AVTN3F0wCNlNQgeBNMbGElPYBYAmF5/yQb1/EfPwMYT2Zb8CGfHksKenfh9Tlz3CxHfavdJuQldSzir41QhPHeBWYxTOqL/huyeqbmkLd2+jiIctfwfRTmexiLhFDzKQRWr4fV5ee4CBDtBjrpgSSBRzg/RbFc4V7rPsxfaupr8AOapc1Hle9E1wKneRWhw26hO8Qy98e07lgBZU5mLtaEmVX1sFefgeZqSOgLBhhKRT8qgKKCNEb0CPv4xTGles5yxGWx6mn7JwtASu6Rk7b3IF4G8ph6Gusvny8qgplbD/u69xLxay9bZO0eWA1onaz5trqB6YtYPOg1StkyceuIfd5MFuq3HFaHQ3rDZbl2nPDSAU9ayeAyqDS8v00vsmPPh72C3KZdmAKePnM+MIQs2ZmpmwfMI/iHIzC2BZeBvuqwE2VVz1rW/S0MFBuVMkELGNGBAuc/w1ESf84kuOXgCzK+PusuUj60fk5ub7fS9YwtMBGwdBweSm1uwL6tHnKV8OwJCyu176QbRdWISAaLNZJqJo38CuyqtVfLhqdMKd/LPE=
