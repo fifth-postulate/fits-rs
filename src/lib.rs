@@ -5,6 +5,11 @@
 //! > an open standard defining a digital file format useful for storage,
 //! > transmission and processing of scientific and other images.
 
+#[macro_use]
+extern crate nom;
+
+pub mod parser;
+
 #[cfg(test)]
 mod tests {
     #[test]
