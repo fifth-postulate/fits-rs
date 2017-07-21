@@ -9,7 +9,7 @@ fi
 rev=$(git rev-parse --short HEAD)
 
 cd target/doc
-echo '<meta http-equiv=refresh content=0;url=/fits-rs/fits-rs/index.html>' > index.html
+echo '<meta http-equiv=refresh content=0;url=/fits-rs/fits_rs/index.html>' > index.html
 
 git init
 git config user.name "Daan van Berkel"
