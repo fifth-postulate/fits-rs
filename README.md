@@ -1,6 +1,8 @@
 # fits-rs [![Build Status](https://travis-ci.org/fifth-postulate/fits-rs.svg?branch=master)](https://travis-ci.org/fifth-postulate/fits-rs) [![Crate](https://img.shields.io/crates/v/fits-rs.svg)](https://crates.io/crates/fits-rs)
 FITS encoder and decoder in Rust.
 
+Make sure to check out the [documentation][] of this crate.
+
 ## FITS
 The *Flexible Image Transport System* ([FITS][fits]) is 
 
@@ -18,3 +20,4 @@ wget --output-document=fits-reference.pdf "https://www.aanda.org/articles/aa/pdf
 [fits]: https://en.wikipedia.org/wiki/FITS
 [reference]: https://fits.gsfc.nasa.gov/fits_standard.html
 [fits-homepage]: https://fits.gsfc.nasa.gov/fits_standard.html
+[documentation]: http://fifth-postulate/fits-rs/ 
