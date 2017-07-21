@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"mod":[["parser","Parser module is responsible for parsing FITS files."]]});
