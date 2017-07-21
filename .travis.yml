@@ -10,7 +10,7 @@ script:
   - cargo build --verbose
   - cargo test --verbose
   - cargo doc
-after_succcess: |
+after_success: |
   [ $TRAVIS_BRANCH = master ] &&
   bash deploy-documentation.sh
 env:
