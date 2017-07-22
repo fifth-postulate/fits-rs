@@ -3,7 +3,7 @@
 named!(fits<&[u8], (Vec<&[u8]>, Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
-named!(primary_header<&[u8], Vec<&[u8]> >, many_m_n!(2, 2, take!(2880)));
+named!(primary_header<&[u8], Vec<&[u8]> >, count!(take!(2880), 2));
 
 named!(end_header<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
 
