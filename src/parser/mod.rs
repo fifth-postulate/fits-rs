@@ -5,10 +5,14 @@ named!(fits<&[u8], (Vec<&[u8]>, Vec<&[u8]>) >,
 
 named!(primary_header<&[u8], Vec<&[u8]> >, many_m_n!(2, 2, take!(2880)));
 
+named!(end_header<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
+
+named!(blank_header<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
+
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::{fits};
+    use super::{fits, end_header, blank_header};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -21,6 +25,34 @@ mod tests {
                 assert_eq!(header.len(), 2);
                 assert_eq!(blocks.len(), 3675);
             },
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn end_header_should_parse_an_END_header(){
+        let data = "END                                                                             "
+            .as_bytes();
+
+        let result = end_header(data);
+
+        match result {
+            IResult::Done(_,_) => assert!(true),
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn blank_header_should_parse_a_BLANK_header(){
+        let data = "                                                                                "
+            .as_bytes();
+
+        let result = blank_header(data);
+
+        match result {
+            IResult::Done(_,_) => assert!(true),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
