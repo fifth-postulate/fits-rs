@@ -1,7 +1,9 @@
 //! Parser module is responsible for parsing FITS files.
 
 named!(fits<&[u8], (Vec<&[u8]>, Vec<&[u8]>) >,
-       pair!(many_m_n!(2, 2, take!(2880) ), many0!( take!(2880) )));
+       pair!(primary_header, many0!( take!(2880) )));
+
+named!(primary_header<&[u8], Vec<&[u8]> >, many_m_n!(2, 2, take!(2880)));
 
 #[cfg(test)]
 mod tests {
