@@ -17,6 +17,15 @@ following command:
 wget --output-document=fits-reference.pdf "https://www.aanda.org/articles/aa/pdf/2010/16/aa15362-10.pdf"
 ```
 
+### Reading Primary Header
+The headers of FITS files are in ASCII. This means they can be read. The
+following command will output the primary header for the FITS file in the
+repository.
+
+```
+head --bytes=5760 assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits | sed -e "s/.\{80\}/&\n/g"
+```
+
 [fits]: https://en.wikipedia.org/wiki/FITS
 [reference]: https://fits.gsfc.nasa.gov/fits_standard.html
 [fits-homepage]: https://fits.gsfc.nasa.gov/fits_standard.html
