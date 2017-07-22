@@ -5,6 +5,8 @@ named!(fits<&[u8], (Vec<&[u8]>, Vec<&[u8]>) >,
 
 named!(primary_header<&[u8], Vec<&[u8]> >, count!(take!(2880), 2));
 
+named!(a_header<&[u8], &[u8]>, take!(80));
+
 named!(end_header<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
 
 named!(blank_header<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
@@ -12,7 +14,7 @@ named!(blank_header<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::{fits, end_header, blank_header};
+    use super::{fits, end_header, blank_header, a_header};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -25,6 +27,20 @@ mod tests {
                 assert_eq!(header.len(), 2);
                 assert_eq!(blocks.len(), 3675);
             },
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn a_header_should_parse_a_header(){
+        let data = "OBJECT  = 'EPIC 200164267'     / string version of target id                    "
+            .as_bytes();
+
+        let result = a_header(data);
+
+        match result {
+            IResult::Done(_,_) => assert!(true),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
