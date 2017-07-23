@@ -1,9 +1,14 @@
 //! Parser module is responsible for parsing FITS files.
 
-named!(fits<&[u8], (Vec<&[u8]>, Vec<&[u8]>) >,
+named!(fits<&[u8], ((Vec<&[u8]>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
-named!(primary_header<&[u8], Vec<&[u8]> >, count!(take!(2880), 2));
+named!(primary_header<&[u8], (Vec<&[u8]>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
+       tuple!(
+           count!(a_header, 55),
+           end_header,
+           count!(blank_header, 16)
+       ));
 
 named!(a_header<&[u8], &[u8]>, take!(80));
 
@@ -14,7 +19,7 @@ named!(blank_header<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::{fits, end_header, blank_header, a_header};
+    use super::{fits, primary_header, end_header, blank_header, a_header};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -24,9 +29,21 @@ mod tests {
 
         match result {
             IResult::Done(_, (header, blocks)) => {
-                assert_eq!(header.len(), 2);
                 assert_eq!(blocks.len(), 3675);
             },
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn primary_header_should_parse_a_primary_header(){
+        let data = include_bytes!("../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits");
+
+        let result = primary_header(&data[0..(2*2880)]);
+
+        match result {
+            IResult::Done(_, _) => assert!(true),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
