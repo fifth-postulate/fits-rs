@@ -26,6 +26,8 @@ repository.
 head --bytes=5760 assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits | sed -e "s/.\{80\}/&\n/g"
 ```
 
+Unfortunately, some extensions are in binary.
+
 [fits]: https://en.wikipedia.org/wiki/FITS
 [reference]: https://fits.gsfc.nasa.gov/fits_standard.html
 [fits-homepage]: https://fits.gsfc.nasa.gov/fits_standard.html
