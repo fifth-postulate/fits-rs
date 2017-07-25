@@ -5,9 +5,9 @@ named!(fits<&[u8], ((Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[
 
 named!(primary_header<&[u8], (Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
        tuple!(
-           count!(a_header, 55),
+           many0!(a_header),
            end_header,
-           count!(blank_header, 16)
+           many0!(blank_header)
        ));
 
 named!(a_header<&[u8], (&[u8], &[u8], &[u8])>,
