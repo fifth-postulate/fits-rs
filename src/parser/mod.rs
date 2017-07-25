@@ -1,16 +1,21 @@
 //! Parser module is responsible for parsing FITS files.
 
-named!(fits<&[u8], ((Vec<&[u8]>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
+named!(fits<&[u8], ((Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
-named!(primary_header<&[u8], (Vec<&[u8]>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
+named!(primary_header<&[u8], (Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
        tuple!(
            count!(a_header, 55),
            end_header,
            count!(blank_header, 16)
        ));
 
-named!(a_header<&[u8], &[u8]>, take!(80));
+named!(a_header<&[u8], (&[u8], &[u8], &[u8])>,
+       tuple!(
+           take!(8),
+           tag!("="),
+           take!(71)
+       ));
 
 named!(end_header<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
 
