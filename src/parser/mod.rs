@@ -6,7 +6,7 @@ named!(fits<&[u8], ((Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[
 named!(primary_header<&[u8], (Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
        tuple!(
            many0!(keyword_record),
-           end_header,
+           end_record,
            many0!(blank_header)
        ));
 
@@ -17,14 +17,14 @@ named!(keyword_record<&[u8], (&[u8], &[u8], &[u8])>,
            take!(71)
        ));
 
-named!(end_header<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
+named!(end_record<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
 
 named!(blank_header<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
 
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::{fits, primary_header, end_header, blank_header, keyword_record};
+    use super::{fits, primary_header, end_record, blank_header, keyword_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -69,11 +69,11 @@ mod tests {
     }
 
     #[test]
-    fn end_header_should_parse_an_END_header(){
+    fn end_record_should_parse_an_END_record(){
         let data = "END                                                                             "
             .as_bytes();
 
-        let result = end_header(data);
+        let result = end_record(data);
 
         match result {
             IResult::Done(_,_) => assert!(true),
