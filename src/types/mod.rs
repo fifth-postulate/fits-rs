@@ -2,13 +2,16 @@
 
 use std::str::FromStr;
 
-struct KeywordRecord {
+/// A keyword record contains information about a FITS header.
+pub struct KeywordRecord {
+    /// The keyword of this record.
     keyword: Keyword,
 }
 
 #[derive(Debug, PartialEq)]
-#[allow(non_camel_case_types)]
-enum Keyword {
+#[allow(non_camel_case_types, missing_docs)]
+/// The various keywords that can be found in headers.
+pub enum Keyword {
     SIMPLE,
     BITPIX,
     NAXIS,
@@ -67,8 +70,10 @@ enum Keyword {
     END,
 }
 
+/// Problems that could occur when parsing a `str` are enumerated here.
 #[derive(Debug)]
-enum ParseKeywordError {
+pub enum ParseKeywordError {
+    /// When a str can not be recognized as a keyword, this error will be returned
     UnknownKeyword
 }
 
