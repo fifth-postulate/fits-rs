@@ -1,21 +1,36 @@
 //! The parser module is responsible for parsing FITS files.
 
-named!(fits<&[u8], ((Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
+use std::str;
+use std::str::FromStr;
+use super::types::Keyword;
+
+named!(fits<&[u8], ((Vec<Keyword>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
-named!(primary_header<&[u8], (Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
+named!(primary_header<&[u8], (Vec<Keyword>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
        tuple!(
            many0!(keyword_record),
            end_record,
            many0!(blank_record)
        ));
 
-named!(keyword_record<&[u8], (&[u8], &[u8], &[u8])>,
-       tuple!(
-           take!(8),
-           tag!("="),
-           take!(71)
-       ));
+named!(keyword_record<&[u8], Keyword>,
+       map!( // TODO should use map_res!
+           tuple!(
+               take!(8),
+               tag!("="),
+               take!(71)
+           ), |(slice, _, _) : (&[u8], &[u8], &[u8])| {
+               match str::from_utf8(slice) {
+                   Ok(s) => {
+                       match Keyword::from_str(s) {
+                           Ok(keyword) => keyword,
+                           Err(_) => Keyword::SIMPLE // TODO this is not correct
+                       }
+                   }
+                   Err(_) => Keyword::SIMPLE // TODO this is not correct
+               }
+           }));
 
 named!(end_record<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
 
