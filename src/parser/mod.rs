@@ -1,16 +1,16 @@
-//! Parser module is responsible for parsing FITS files.
+//! The parser module is responsible for parsing FITS files.
 
 named!(fits<&[u8], ((Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
 named!(primary_header<&[u8], (Vec<(&[u8], &[u8], &[u8])>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
        tuple!(
-           many0!(a_header),
+           many0!(keyword_record),
            end_header,
            many0!(blank_header)
        ));
 
-named!(a_header<&[u8], (&[u8], &[u8], &[u8])>,
+named!(keyword_record<&[u8], (&[u8], &[u8], &[u8])>,
        tuple!(
            take!(8),
            tag!("="),
@@ -24,7 +24,7 @@ named!(blank_header<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::{fits, primary_header, end_header, blank_header, a_header};
+    use super::{fits, primary_header, end_header, blank_header, keyword_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -55,11 +55,11 @@ mod tests {
     }
 
     #[test]
-    fn a_header_should_parse_a_header(){
+    fn keyword_record_should_parse_a_keyword_record(){
         let data = "OBJECT  = 'EPIC 200164267'     / string version of target id                    "
             .as_bytes();
 
-        let result = a_header(data);
+        let result = keyword_record(data);
 
         match result {
             IResult::Done(_,_) => assert!(true),
