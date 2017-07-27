@@ -4,10 +4,10 @@ use std::str;
 use std::str::FromStr;
 use super::types::Keyword;
 
-named!(fits<&[u8], ((Vec<Keyword>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
+named!(fits<&[u8], ((Vec<Keyword>, Keyword, Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
-named!(primary_header<&[u8], (Vec<Keyword>, (&[u8], Vec<&[u8]>), Vec<Vec<&[u8]> >)>,
+named!(primary_header<&[u8], (Vec<Keyword>, Keyword, Vec<Vec<&[u8]> >)>,
        tuple!(
            many0!(keyword_record),
            end_record,
@@ -21,7 +21,7 @@ named!(keyword_record<&[u8], Keyword>,
                tag!("="),
                take!(71)
            ), |(slice, _, _) : (&[u8], &[u8], &[u8])| {
-               match str::from_utf8(slice) {
+               let k: Keyword = match str::from_utf8(slice) {
                    Ok(s) => {
                        match Keyword::from_str(s) {
                            Ok(keyword) => keyword,
@@ -29,7 +29,9 @@ named!(keyword_record<&[u8], Keyword>,
                        }
                    }
                    Err(_) => Keyword::SIMPLE // TODO this is not correct
-               }
+               };
+               println!("{:?}", k);
+               k
            }));
 
 named!(keyword<&[u8], Keyword>,
@@ -40,7 +42,11 @@ named!(keyword<&[u8], Keyword>,
            Keyword::from_str
        ));
 
-named!(end_record<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
+named!(end_record<&[u8], Keyword>,
+       map!(
+           pair!(tag!("END"), count!(tag!(" "), 77)),
+           |_| { Keyword::END }
+       ));
 
 named!(blank_record<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
 
@@ -114,7 +120,7 @@ mod tests {
         let result = end_record(data);
 
         match result {
-            IResult::Done(_,_) => assert!(true),
+            IResult::Done(_, keyword) => assert_eq!(keyword, Keyword::END),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
