@@ -86,7 +86,7 @@ mod tests {
         let result = keyword_record(data);
 
         match result {
-            IResult::Done(_,_) => assert!(true),
+            IResult::Done(_,k) => assert_eq!(k, Keyword::OBJECT),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
