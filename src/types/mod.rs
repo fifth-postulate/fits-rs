@@ -8,6 +8,9 @@ pub struct KeywordRecord {
     keyword: Keyword,
 }
 
+/// A unit tuple that will act as a placeholder for blank records.
+pub struct BlankRecord;
+
 #[derive(Debug, PartialEq)]
 #[allow(non_camel_case_types, missing_docs)]
 /// The various keywords that can be found in headers.

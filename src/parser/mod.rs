@@ -2,12 +2,12 @@
 
 use std::str;
 use std::str::FromStr;
-use super::types::Keyword;
+use super::types::{Keyword, BlankRecord};
 
-named!(fits<&[u8], ((Vec<Keyword>, Keyword, Vec<Vec<&[u8]> >), Vec<&[u8]>) >,
+named!(fits<&[u8], ((Vec<Keyword>, Keyword, Vec<BlankRecord>), Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
-named!(primary_header<&[u8], (Vec<Keyword>, Keyword, Vec<Vec<&[u8]> >)>,
+named!(primary_header<&[u8], (Vec<Keyword>, Keyword, Vec<BlankRecord>)>,
        tuple!(
            many0!(keyword_record),
            end_record,
@@ -48,7 +48,11 @@ named!(end_record<&[u8], Keyword>,
            |_| { Keyword::END }
        ));
 
-named!(blank_record<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
+named!(blank_record<&[u8], BlankRecord>,
+       map!(
+           count!(tag!(" "), 80),
+           |_| { BlankRecord }
+       ));
 
 #[cfg(test)]
 mod tests {
