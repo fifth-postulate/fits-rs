@@ -32,6 +32,14 @@ named!(keyword_record<&[u8], Keyword>,
                }
            }));
 
+named!(keyword<&[u8], Keyword>,
+       map_res!(
+           map_res!(
+               take!(8),
+               str::from_utf8),
+           Keyword::from_str
+       ));
+
 named!(end_record<&[u8],(&[u8], Vec<&[u8]>)>, pair!(tag!("END"), count!(tag!(" "), 77)));
 
 named!(blank_record<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
@@ -39,7 +47,8 @@ named!(blank_record<&[u8],Vec<&[u8]> >, count!(tag!(" "), 80));
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::{fits, primary_header, end_record, blank_record, keyword_record};
+    use super::super::types::Keyword;
+    use super::{fits, primary_header, keyword_record, keyword, end_record, blank_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -78,6 +87,20 @@ mod tests {
 
         match result {
             IResult::Done(_,_) => assert!(true),
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn keyword_should_parse_a_keyword(){
+        let data = "OBJECT  "
+            .as_bytes();
+
+        let result = keyword(data);
+
+        match result {
+            IResult::Done(_, keyword) => assert_eq!(keyword, Keyword::OBJECT),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
