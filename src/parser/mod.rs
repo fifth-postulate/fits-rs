@@ -57,7 +57,7 @@ named!(blank_record<&[u8], BlankRecord>,
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::super::types::Keyword;
+    use super::super::types::{Keyword, BlankRecord};
     use super::{fits, primary_header, keyword_record, keyword, end_record, blank_record};
 
     #[test]
@@ -138,7 +138,7 @@ mod tests {
         let result = blank_record(data);
 
         match result {
-            IResult::Done(_,_) => assert!(true),
+            IResult::Done(_, record) => assert_eq!(record, BlankRecord),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }

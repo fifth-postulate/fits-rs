@@ -8,6 +8,7 @@ pub struct KeywordRecord {
     keyword: Keyword,
 }
 
+#[derive(Debug, PartialEq)]
 /// A unit tuple that will act as a placeholder for blank records.
 pub struct BlankRecord;
 
