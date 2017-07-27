@@ -82,7 +82,7 @@ mod tests {
         let result = primary_header(&data[0..(2*2880)]);
 
         match result {
-            IResult::Done(_, _) => assert!(true),
+            IResult::Done(_, (headers, _, _)) => assert_eq!(headers.len(), 55),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
