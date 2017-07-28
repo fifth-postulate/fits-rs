@@ -15,23 +15,13 @@ named!(primary_header<&[u8], (Vec<Keyword>, Keyword, Vec<BlankRecord>)>,
        ));
 
 named!(keyword_record<&[u8], Keyword>,
-       map!( // TODO should use map_res!
+       map_res!( // TODO should use map_res!
            tuple!(
                take!(8),
                tag!("="),
                take!(71)
            ), |(slice, _, _) : (&[u8], &[u8], &[u8])| {
-               let k: Keyword = match str::from_utf8(slice) {
-                   Ok(s) => {
-                       match Keyword::from_str(s) {
-                           Ok(keyword) => keyword,
-                           Err(_) => Keyword::SIMPLE // TODO this is not correct
-                       }
-                   }
-                   Err(_) => Keyword::SIMPLE // TODO this is not correct
-               };
-               println!("{:?}", k);
-               k
+               Keyword::from_str("OBJECT") // TODO obviously wrong, correct it
            }));
 
 named!(keyword<&[u8], Keyword>,
