@@ -16,13 +16,15 @@ named!(primary_header<&[u8], (Vec<Keyword>, Keyword, Vec<BlankRecord>)>,
 
 named!(keyword_record<&[u8], Keyword>,
        map_res!( // TODO should use map_res!
-           tuple!(
-               take!(8),
-               tag!("="),
-               take!(71)
-           ), |(slice, _, _) : (&[u8], &[u8], &[u8])| {
-               Keyword::from_str("OBJECT") // TODO obviously wrong, correct it
-           }));
+           map!(
+               tuple!(
+                   take!(8),
+                   tag!("="),
+                   take!(71)
+               ), |(slice, _, _) : (&[u8], &[u8], &[u8])| {
+                   "OBJECT" // TODO obviously wrong, correct it
+               }),
+           Keyword::from_str));
 
 named!(keyword<&[u8], Keyword>,
        map_res!(
