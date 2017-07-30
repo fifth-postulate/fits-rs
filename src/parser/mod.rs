@@ -15,15 +15,17 @@ named!(primary_header<&[u8], (Vec<Keyword>, Keyword, Vec<BlankRecord>)>,
        ));
 
 named!(keyword_record<&[u8], Keyword>,
-       map_res!( // TODO should use map_res!
-           map!(
-               tuple!(
-                   take!(8),
-                   tag!("="),
-                   take!(71)
-               ), |(slice, _, _) : (&[u8], &[u8], &[u8])| {
-                   "OBJECT" // TODO obviously wrong, correct it
-               }),
+       map_res!(
+           map_res!(
+               map!(
+                   tuple!(
+                       take!(8),
+                       tag!("="),
+                       take!(71)
+                   ), |(slice, _, _) : (&[u8], &[u8], &[u8])| {
+                       "OBJECT".as_bytes() // TODO obviously wrong, correct it
+                   }),
+               str::from_utf8),
            Keyword::from_str));
 
 named!(keyword<&[u8], Keyword>,
