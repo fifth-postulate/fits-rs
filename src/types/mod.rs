@@ -2,10 +2,18 @@
 
 use std::str::FromStr;
 
+#[derive(Debug, PartialEq)]
 /// A keyword record contains information about a FITS header.
 pub struct KeywordRecord {
     /// The keyword of this record.
     keyword: Keyword,
+}
+
+impl KeywordRecord {
+    /// Create a `KeywordRecord` from a specific `Keyword`.
+    pub fn create(keyword: Keyword) -> KeywordRecord {
+        KeywordRecord { keyword : keyword }
+    }
 }
 
 #[derive(Debug, PartialEq)]
@@ -150,7 +158,14 @@ impl FromStr for Keyword {
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
-    use super::Keyword;
+    use super::{KeywordRecord, Keyword};
+
+    #[test]
+    fn keyword_record_constructed_from_the_create_function_should_eq_hand_construction() {
+        assert_eq!(
+            KeywordRecord { keyword: Keyword::ORIGIN },
+            KeywordRecord::create(Keyword::ORIGIN));
+    }
 
     #[test]
     fn keywords_could_be_constructed_from_str() {
