@@ -54,6 +54,7 @@ mod tests {
     use super::super::types::{Keyword, BlankRecord};
     use super::{fits, primary_header, keyword_record, keyword, end_record, blank_record};
 
+    #[ignore]
     #[test]
     fn it_should_parse_a_fits_file(){
         let data = include_bytes!("../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits");
@@ -69,6 +70,7 @@ mod tests {
         }
     }
 
+    #[ignore]
     #[test]
     fn primary_header_should_parse_a_primary_header(){
         let data = include_bytes!("../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits");
