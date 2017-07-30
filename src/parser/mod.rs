@@ -2,16 +2,17 @@
 
 use std::str;
 use std::str::FromStr;
-use super::types::{KeywordRecord, Keyword, BlankRecord};
+use super::types::{PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
 
-named!(fits<&[u8], ((Vec<KeywordRecord>, Keyword, Vec<BlankRecord>), Vec<&[u8]>) >,
+named!(fits<&[u8], (PrimaryHeader, Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
-named!(primary_header<&[u8], (Vec<KeywordRecord>, Keyword, Vec<BlankRecord>)>,
-       tuple!(
-           many0!(keyword_record),
-           end_record,
-           many0!(blank_record)
+named!(primary_header<&[u8], PrimaryHeader>,
+       do_parse!(
+           records: many0!(keyword_record) >>
+               end_record >>
+               many0!(blank_record) >>
+               (PrimaryHeader::new(records))
        ));
 
 named!(keyword_record<&[u8], KeywordRecord>,
@@ -45,7 +46,7 @@ named!(blank_record<&[u8], BlankRecord>,
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::super::types::{KeywordRecord, Keyword, BlankRecord};
+    use super::super::types::{PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
     use super::{fits, primary_header, keyword_record, keyword, end_record, blank_record};
 
     #[ignore]
@@ -64,7 +65,6 @@ mod tests {
         }
     }
 
-    #[ignore]
     #[test]
     fn primary_header_should_parse_a_primary_header(){
         let data = include_bytes!("../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits");
@@ -72,10 +72,70 @@ mod tests {
         let result = primary_header(&data[0..(2*2880)]);
 
         match result {
-            IResult::Done(_, (headers, _, _)) => assert_eq!(headers.len(), 55),
+            IResult::Done(_, h) => assert_eq!(h, long_cadence_header()),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
+    }
+
+    fn long_cadence_header() -> PrimaryHeader {
+        PrimaryHeader::new(vec!(
+            KeywordRecord::create(Keyword::SIMPLE),
+            KeywordRecord::create(Keyword::BITPIX),
+            KeywordRecord::create(Keyword::NAXIS),
+            KeywordRecord::create(Keyword::EXTEND),
+            KeywordRecord::create(Keyword::NEXTEND),
+            KeywordRecord::create(Keyword::EXTNAME),
+            KeywordRecord::create(Keyword::EXTVER),
+            KeywordRecord::create(Keyword::ORIGIN),
+            KeywordRecord::create(Keyword::DATE),
+            KeywordRecord::create(Keyword::CREATOR),
+            KeywordRecord::create(Keyword::PROCVER),
+            KeywordRecord::create(Keyword::FILEVER),
+            KeywordRecord::create(Keyword::TIMVERSN),
+            KeywordRecord::create(Keyword::TELESCOP),
+            KeywordRecord::create(Keyword::INSTRUME),
+            KeywordRecord::create(Keyword::OBJECT),
+            KeywordRecord::create(Keyword::KEPLERID),
+            KeywordRecord::create(Keyword::CHANNEL),
+            KeywordRecord::create(Keyword::MODULE),
+            KeywordRecord::create(Keyword::OUTPUT),
+            KeywordRecord::create(Keyword::CAMPAIGN),
+            KeywordRecord::create(Keyword::DATA_REL),
+            KeywordRecord::create(Keyword::OBSMODE),
+            KeywordRecord::create(Keyword::MISSION),
+            KeywordRecord::create(Keyword::TTABLEID),
+            KeywordRecord::create(Keyword::RADESYS),
+            KeywordRecord::create(Keyword::RA_OBJ),
+            KeywordRecord::create(Keyword::DEC_OBJ),
+            KeywordRecord::create(Keyword::EQUINOX),
+            KeywordRecord::create(Keyword::PMRA),
+            KeywordRecord::create(Keyword::PMDEC),
+            KeywordRecord::create(Keyword::PMTOTAL),
+            KeywordRecord::create(Keyword::PARALLAX),
+            KeywordRecord::create(Keyword::GLON),
+            KeywordRecord::create(Keyword::GLAT),
+            KeywordRecord::create(Keyword::GMAG),
+            KeywordRecord::create(Keyword::RMAG),
+            KeywordRecord::create(Keyword::IMAG),
+            KeywordRecord::create(Keyword::ZMAG),
+            KeywordRecord::create(Keyword::JMAG),
+            KeywordRecord::create(Keyword::HMAG),
+            KeywordRecord::create(Keyword::KMAG),
+            KeywordRecord::create(Keyword::KEPMAG),
+            KeywordRecord::create(Keyword::GRCOLOR),
+            KeywordRecord::create(Keyword::JKCOLOR),
+            KeywordRecord::create(Keyword::GKCOLOR),
+            KeywordRecord::create(Keyword::TEFF),
+            KeywordRecord::create(Keyword::LOGG),
+            KeywordRecord::create(Keyword::FEH),
+            KeywordRecord::create(Keyword::EBMINUSV),
+            KeywordRecord::create(Keyword::AV),
+            KeywordRecord::create(Keyword::RADIUS),
+            KeywordRecord::create(Keyword::TMINDEX),
+            KeywordRecord::create(Keyword::CHECKSUM),
+            KeywordRecord::create(Keyword::DATASUM),
+        ))
     }
 
     #[test]

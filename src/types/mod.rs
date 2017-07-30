@@ -3,6 +3,20 @@
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
+/// The primary header of a FITS file.
+pub struct PrimaryHeader {
+    /// The keyword records of the primary header.
+    pub keyword_records: Vec<KeywordRecord>,
+}
+
+impl PrimaryHeader {
+    /// Create a PrimaryHeader with a given set of keyword_records
+    pub fn new(keyword_records: Vec<KeywordRecord>) -> PrimaryHeader {
+        PrimaryHeader { keyword_records: keyword_records }
+    }
+}
+
+#[derive(Debug, PartialEq)]
 /// A keyword record contains information about a FITS header.
 pub struct KeywordRecord {
     /// The keyword of this record.
@@ -30,6 +44,7 @@ pub enum Keyword {
     NAXISn(u8),
     EXTEND,
     NEXTEND,
+    EXTNAME,
     EXTVER,
     ORIGIN,
     DATE,
@@ -100,6 +115,7 @@ impl FromStr for Keyword {
             "NAXIS" => Ok(Keyword::NAXIS),
             "EXTEND" => Ok(Keyword::EXTEND),
             "NEXTEND" => Ok(Keyword::NEXTEND),
+            "EXTNAME" => Ok(Keyword::EXTNAME),
             "EXTVER" => Ok(Keyword::EXTVER),
             "ORIGIN" => Ok(Keyword::ORIGIN),
             "DATE" => Ok(Keyword::DATE),
@@ -158,7 +174,20 @@ impl FromStr for Keyword {
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
-    use super::{KeywordRecord, Keyword};
+    use super::*;
+
+    fn primary_header_constructed_from_the_new_function_shoul_eq_hand_construction() {
+        assert_eq!(
+            PrimaryHeader { keyword_records: vec!(
+                KeywordRecord::create(Keyword::SIMPLE),
+                KeywordRecord::create(Keyword::NEXTEND),
+            )},
+            PrimaryHeader::new(vec!(
+                KeywordRecord::create(Keyword::SIMPLE),
+                KeywordRecord::create(Keyword::NEXTEND),
+            ))
+        );
+    }
 
     #[test]
     fn keyword_record_constructed_from_the_create_function_should_eq_hand_construction() {
