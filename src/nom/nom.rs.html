@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nom-3.1.0/src/nom.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nom-3.2.0/src/nom.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>nom.rs.html -- source</title>
@@ -1910,7 +1910,7 @@
     <span class="ident">IResult</span>::<span class="ident">Done</span>(<span class="kw-2">&amp;</span><span class="ident">input</span>[<span class="ident">input</span>.<span class="ident">len</span>()..], <span class="ident">input</span>)
 }
 
-<span class="doccomment">/// Recognizes floating point number in a byte string and returs a f32</span>
+<span class="doccomment">/// Recognizes floating point number in a byte string and returns a f32</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">float</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">IResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>],<span class="ident">f32</span><span class="op">&gt;</span> {
   <span class="macro">flat_map</span><span class="macro">!</span>(<span class="ident">input</span>,
@@ -1933,7 +1933,7 @@
   )
 }
 
-<span class="doccomment">/// Recognizes floating point number in a string and returs a f32</span>
+<span class="doccomment">/// Recognizes floating point number in a string and returns a f32</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">float_s</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span>,<span class="ident">f32</span><span class="op">&gt;</span> {
   <span class="macro">flat_map</span><span class="macro">!</span>(<span class="ident">input</span>,
@@ -1956,7 +1956,7 @@
   )
 }
 
-<span class="doccomment">/// Recognizes floating point number in a byte string and returs a f64</span>
+<span class="doccomment">/// Recognizes floating point number in a byte string and returns a f64</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">double</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">IResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>],<span class="ident">f64</span><span class="op">&gt;</span> {
   <span class="macro">flat_map</span><span class="macro">!</span>(<span class="ident">input</span>,
@@ -1979,7 +1979,7 @@
   )
 }
 
-<span class="doccomment">/// Recognizes floating point number in a string and returs a f64</span>
+<span class="doccomment">/// Recognizes floating point number in a string and returns a f64</span>
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">feature</span> <span class="op">=</span> <span class="string">&quot;std&quot;</span>)]</span>
 <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">double_s</span>(<span class="ident">input</span>: <span class="kw-2">&amp;</span><span class="ident">str</span>) <span class="op">-&gt;</span> <span class="ident">IResult</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span>,<span class="ident">f64</span><span class="op">&gt;</span> {
   <span class="macro">flat_map</span><span class="macro">!</span>(<span class="ident">input</span>,

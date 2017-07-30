@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nom-3.1.0/src/traits.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nom-3.2.0/src/traits.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>traits.rs.html -- source</title>
@@ -651,6 +651,21 @@
 <span id="606">606</span>
 <span id="607">607</span>
 <span id="608">608</span>
+<span id="609">609</span>
+<span id="610">610</span>
+<span id="611">611</span>
+<span id="612">612</span>
+<span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! Traits input types have to implement to work with nom combinators</span>
 <span class="doccomment">//!</span>
@@ -724,6 +739,9 @@
     <span class="doccomment">/// tests that self is an octal digit</span>
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">is_oct_digit</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span>;
+    <span class="doccomment">/// gets the len in bytes for self</span>
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span>;
 }
 
 <span class="kw">impl</span> <span class="ident">AsChar</span> <span class="kw">for</span> <span class="ident">u8</span> {
@@ -749,6 +767,10 @@
     <span class="kw">fn</span> <span class="ident">is_oct_digit</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
       <span class="self">self</span> <span class="op">&gt;=</span> <span class="number">0x30</span> <span class="op">&amp;&amp;</span> <span class="self">self</span> <span class="op">&lt;=</span> <span class="number">0x37</span>
     }
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+      <span class="number">1</span>
+    }
 }
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">AsChar</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">u8</span> {
     <span class="attribute">#[<span class="ident">inline</span>]</span>
@@ -773,6 +795,10 @@
     <span class="kw">fn</span> <span class="ident">is_oct_digit</span>(<span class="self">self</span>)   <span class="op">-&gt;</span> <span class="ident">bool</span> {
       <span class="kw-2">*</span><span class="self">self</span> <span class="op">&gt;=</span> <span class="number">0x30</span> <span class="op">&amp;&amp;</span> <span class="kw-2">*</span><span class="self">self</span> <span class="op">&lt;=</span> <span class="number">0x37</span>
     }
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+      <span class="number">1</span>
+    }
 }
 
 <span class="kw">impl</span> <span class="ident">AsChar</span> <span class="kw">for</span> <span class="ident">char</span> {
@@ -788,6 +814,8 @@
     <span class="kw">fn</span> <span class="ident">is_hex_digit</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> { <span class="self">self</span>.<span class="ident">is_digit</span>(<span class="number">16</span>) }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">is_oct_digit</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> { <span class="self">self</span>.<span class="ident">is_digit</span>(<span class="number">8</span>) }
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> { <span class="self">self</span>.<span class="ident">len_utf8</span>() }
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">AsChar</span> <span class="kw">for</span> <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">char</span> {
@@ -803,6 +831,8 @@
     <span class="kw">fn</span> <span class="ident">is_hex_digit</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> { <span class="self">self</span>.<span class="ident">is_digit</span>(<span class="number">16</span>) }
     <span class="attribute">#[<span class="ident">inline</span>]</span>
     <span class="kw">fn</span> <span class="ident">is_oct_digit</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> { <span class="self">self</span>.<span class="ident">is_digit</span>(<span class="number">8</span>) }
+    <span class="attribute">#[<span class="ident">inline</span>]</span>
+    <span class="kw">fn</span> <span class="ident">len</span>(<span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> { <span class="self">self</span>.<span class="ident">len_utf8</span>() }
 }
 
 <span class="doccomment">/// abstracts common iteration operations on the input type</span>

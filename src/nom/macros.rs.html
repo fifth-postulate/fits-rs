@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nom-3.1.0/src/macros.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nom-3.2.0/src/macros.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>macros.rs.html -- source</title>
@@ -1449,7 +1449,7 @@
 <span class="doccomment">//!     take_while!($input, call!($f));</span>
 <span class="doccomment">//!   );</span>
 <span class="doccomment">//! );</span>
-<span class="doccomment">//!</span>
+<span class="doccomment">//! ```</span>
 <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">unused_variables</span>)]</span>
 
 <span class="doccomment">/// Wraps a parser in a closure</span>
@@ -2485,7 +2485,7 @@
   );
 );
 
-<span class="doccomment">/// `eof!(i)` returns `i` if it is at the end of input data</span>
+<span class="doccomment">/// `eof!()` returns its input if it is at the end of input data</span>
 <span class="doccomment">///</span>
 <span class="doccomment">/// please note that for now, eof only means there&#39;s no more</span>
 <span class="doccomment">/// data available, it does not work yet with smarter input</span>

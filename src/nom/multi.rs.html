@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nom-3.1.0/src/multi.rs`.">
+    <meta name="description" content="Source to the Rust file `/home/travis/.cargo/registry/src/github.com-1ecc6299db9ec823/nom-3.2.0/src/multi.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>multi.rs.html -- source</title>
@@ -1655,6 +1655,8 @@
 <span id="1610">1610</span>
 <span id="1611">1611</span>
 <span id="1612">1612</span>
+<span id="1613">1613</span>
+<span id="1614">1614</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! Parsers for applying parsers multiple times</span>
 
@@ -1705,7 +1707,8 @@
                   <span class="kw">break</span>;
                 },
                 <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Done</span>(<span class="ident">i2</span>,_)     <span class="op">=&gt;</span> {
-                  <span class="kw">if</span> <span class="ident">i2</span>.<span class="ident">input_len</span>() <span class="op">==</span> <span class="ident">input</span>.<span class="ident">input_len</span>() {
+                  <span class="kw">let</span> <span class="ident">i2_len</span> <span class="op">=</span> <span class="ident">i2</span>.<span class="ident">input_len</span>();
+                  <span class="kw">if</span> <span class="ident">i2_len</span> <span class="op">==</span> <span class="ident">input</span>.<span class="ident">input_len</span>() {
                     <span class="ident">ret</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Done</span>(<span class="ident">input</span>, <span class="ident">res</span>);
                     <span class="kw">break</span>;
                   }
@@ -1721,7 +1724,7 @@
                       <span class="kw">break</span>;
                     },
                     <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Incomplete</span>(<span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">Needed</span>::<span class="ident">Size</span>(<span class="ident">needed</span>)) <span class="op">=&gt;</span> {
-                      <span class="kw">let</span> (<span class="ident">size</span>,<span class="ident">overflowed</span>) <span class="op">=</span> <span class="ident">needed</span>.<span class="ident">overflowing_add</span>((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>).<span class="ident">input_len</span>() <span class="op">-</span> <span class="ident">i2</span>.<span class="ident">input_len</span>());
+                      <span class="kw">let</span> (<span class="ident">size</span>,<span class="ident">overflowed</span>) <span class="op">=</span> <span class="ident">needed</span>.<span class="ident">overflowing_add</span>((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>).<span class="ident">input_len</span>() <span class="op">-</span> <span class="ident">i2_len</span>);
                       <span class="ident">ret</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">overflowed</span> {
                         <span class="bool-val">true</span>  <span class="op">=&gt;</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Incomplete</span>(<span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">Needed</span>::<span class="ident">Unknown</span>),
                         <span class="bool-val">false</span> <span class="op">=&gt;</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Incomplete</span>(<span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">Needed</span>::<span class="ident">Size</span>(<span class="ident">size</span>)),
@@ -1729,7 +1732,7 @@
                       <span class="kw">break</span>;
                     },
                     <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Done</span>(<span class="ident">i3</span>,<span class="ident">o3</span>)    <span class="op">=&gt;</span> {
-                      <span class="kw">if</span> <span class="ident">i3</span>.<span class="ident">input_len</span>() <span class="op">==</span> <span class="ident">i2</span>.<span class="ident">input_len</span>() {
+                      <span class="kw">if</span> <span class="ident">i3</span>.<span class="ident">input_len</span>() <span class="op">==</span> <span class="ident">i2_len</span> {
                         <span class="ident">ret</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Done</span>(<span class="ident">input</span>, <span class="ident">res</span>);
                         <span class="kw">break</span>;
                       }
@@ -1804,7 +1807,8 @@
                   <span class="kw">break</span>;
                 },
                 <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Done</span>(<span class="ident">i2</span>,_)     <span class="op">=&gt;</span> {
-                  <span class="kw">if</span> <span class="ident">i2</span>.<span class="ident">input_len</span>() <span class="op">==</span> <span class="ident">input</span>.<span class="ident">input_len</span>() {
+                  <span class="kw">let</span> <span class="ident">i2_len</span> <span class="op">=</span> <span class="ident">i2</span>.<span class="ident">input_len</span>();
+                  <span class="kw">if</span> <span class="ident">i2_len</span> <span class="op">==</span> <span class="ident">input</span>.<span class="ident">input_len</span>() {
                     <span class="ident">ret</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Done</span>(<span class="ident">input</span>, <span class="ident">res</span>);
                     <span class="kw">break</span>;
                   }
@@ -1820,7 +1824,7 @@
                       <span class="kw">break</span>;
                     },
                     <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Incomplete</span>(<span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">Needed</span>::<span class="ident">Size</span>(<span class="ident">needed</span>)) <span class="op">=&gt;</span> {
-                      <span class="kw">let</span> (<span class="ident">size</span>,<span class="ident">overflowed</span>) <span class="op">=</span> <span class="ident">needed</span>.<span class="ident">overflowing_add</span>((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>).<span class="ident">input_len</span>() <span class="op">-</span> <span class="ident">i2</span>.<span class="ident">input_len</span>());
+                      <span class="kw">let</span> (<span class="ident">size</span>,<span class="ident">overflowed</span>) <span class="op">=</span> <span class="ident">needed</span>.<span class="ident">overflowing_add</span>((<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>).<span class="ident">input_len</span>() <span class="op">-</span> <span class="ident">i2_len</span>);
                       <span class="ident">ret</span> <span class="op">=</span> <span class="kw">match</span> <span class="ident">overflowed</span> {
                         <span class="bool-val">true</span>  <span class="op">=&gt;</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Incomplete</span>(<span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">Needed</span>::<span class="ident">Unknown</span>),
                         <span class="bool-val">false</span> <span class="op">=&gt;</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Incomplete</span>(<span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">Needed</span>::<span class="ident">Size</span>(<span class="ident">size</span>)),
@@ -1828,7 +1832,7 @@
                       <span class="kw">break</span>;
                     },
                     <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Done</span>(<span class="ident">i3</span>,<span class="ident">o3</span>)    <span class="op">=&gt;</span> {
-                      <span class="kw">if</span> <span class="ident">i3</span>.<span class="ident">input_len</span>() <span class="op">==</span> <span class="ident">i2</span>.<span class="ident">input_len</span>() {
+                      <span class="kw">if</span> <span class="ident">i3</span>.<span class="ident">input_len</span>() <span class="op">==</span> <span class="ident">i2_len</span> {
                         <span class="ident">ret</span> <span class="op">=</span> <span class="macro-nonterminal">$</span><span class="kw">crate</span>::<span class="macro-nonterminal">IResult</span>::<span class="ident">Done</span>(<span class="ident">input</span>, <span class="ident">res</span>);
                         <span class="kw">break</span>;
                       }

@@ -1,0 +1,1 @@
+initSidebarItems({"enum":[["Keyword","The various keywords that can be found in headers."],["ParseKeywordError","Problems that could occur when parsing a `str` are enumerated here."]],"struct":[["BlankRecord","A unit tuple that will act as a placeholder for blank records."],["KeywordRecord","A keyword record contains information about a FITS header."]]});
