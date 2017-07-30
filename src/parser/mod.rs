@@ -2,31 +2,25 @@
 
 use std::str;
 use std::str::FromStr;
-use super::types::{Keyword, BlankRecord};
+use super::types::{KeywordRecord, Keyword, BlankRecord};
 
-named!(fits<&[u8], ((Vec<Keyword>, Keyword, Vec<BlankRecord>), Vec<&[u8]>) >,
+named!(fits<&[u8], ((Vec<KeywordRecord>, Keyword, Vec<BlankRecord>), Vec<&[u8]>) >,
        pair!(primary_header, many0!( take!(2880) )));
 
-named!(primary_header<&[u8], (Vec<Keyword>, Keyword, Vec<BlankRecord>)>,
+named!(primary_header<&[u8], (Vec<KeywordRecord>, Keyword, Vec<BlankRecord>)>,
        tuple!(
            many0!(keyword_record),
            end_record,
            many0!(blank_record)
        ));
 
-named!(keyword_record<&[u8], Keyword>,
-       map_res!(
-           map_res!(
-               map!(
-                   tuple!(
-                       take!(8),
-                       tag!("="),
-                       take!(71)
-                   ), |(slice, _, _) : (&[u8], &[u8], &[u8])| {
-                       "OBJECT".as_bytes() // TODO obviously wrong, correct it
-                   }),
-               str::from_utf8),
-           Keyword::from_str));
+named!(keyword_record<&[u8], KeywordRecord>,
+       do_parse!(
+           key: keyword  >>
+               tag!("=") >>
+               take!(71) >>
+               (KeywordRecord::create(key))
+       ));
 
 named!(keyword<&[u8], Keyword>,
        map_res!(
@@ -51,7 +45,7 @@ named!(blank_record<&[u8], BlankRecord>,
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::super::types::{Keyword, BlankRecord};
+    use super::super::types::{KeywordRecord, Keyword, BlankRecord};
     use super::{fits, primary_header, keyword_record, keyword, end_record, blank_record};
 
     #[ignore]
@@ -92,7 +86,7 @@ mod tests {
         let result = keyword_record(data);
 
         match result {
-            IResult::Done(_,k) => assert_eq!(k, Keyword::OBJECT),
+            IResult::Done(_,k) => assert_eq!(k, KeywordRecord::create(Keyword::OBJECT)),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
