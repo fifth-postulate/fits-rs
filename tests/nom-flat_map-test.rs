@@ -65,4 +65,6 @@ fn record_test() {
 fn certain_length_record_test() {
     assert_eq!(certain_length_record(&b"01234/abcd"[..]),
                IResult::Done(&b""[..], (&b"01234"[..], Option::Some(&b"abcd"[..]))));
+    assert_eq!(certain_length_record(&b"01234/abcdABC"[..]),
+               IResult::Done(&b"ABC"[..], (&b"01234"[..], Option::Some(&b"abcd"[..]))));
 }
