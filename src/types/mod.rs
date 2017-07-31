@@ -3,6 +3,20 @@
 use std::str::FromStr;
 
 #[derive(Debug, PartialEq)]
+/// Representation of a FITS file.
+pub struct Fits {
+    /// The primary header
+    pub primary_header: PrimaryHeader
+}
+
+impl Fits {
+    /// Create a Fits structure with a given primary header
+    pub fn new(primary_header: PrimaryHeader) -> Fits {
+        Fits { primary_header: primary_header }
+    }
+}
+
+#[derive(Debug, PartialEq)]
 /// The primary header of a FITS file.
 pub struct PrimaryHeader {
     /// The keyword records of the primary header.
@@ -175,6 +189,13 @@ impl FromStr for Keyword {
 mod tests {
     use std::str::FromStr;
     use super::*;
+
+    fn fits_constructed_from_the_new_function_should_eq_hand_construction() {
+        assert_eq!(
+            Fits { primary_header: PrimaryHeader::new(vec!()) },
+            Fits::new(PrimaryHeader::new(vec!()))
+        );
+    }
 
     fn primary_header_constructed_from_the_new_function_shoul_eq_hand_construction() {
         assert_eq!(
