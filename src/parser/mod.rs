@@ -2,10 +2,14 @@
 
 use std::str;
 use std::str::FromStr;
-use super::types::{PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
+use super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
 
-named!(fits<&[u8], (PrimaryHeader, Vec<&[u8]>) >,
-       pair!(primary_header, many0!( take!(2880) )));
+named!(fits<&[u8], Fits>,
+       do_parse!(
+           ph: primary_header >>
+               many0!(take!(2880)) >>
+               (Fits::new(ph))
+       ));
 
 named!(primary_header<&[u8], PrimaryHeader>,
        do_parse!(
@@ -46,10 +50,9 @@ named!(blank_record<&[u8], BlankRecord>,
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::super::types::{PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
+    use super::super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
     use super::{fits, primary_header, keyword_record, keyword, end_record, blank_record};
 
-    #[ignore]
     #[test]
     fn it_should_parse_a_fits_file(){
         let data = include_bytes!("../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits");
@@ -57,8 +60,8 @@ mod tests {
         let result = fits(data);
 
         match result {
-            IResult::Done(_, (header, blocks)) => {
-                assert_eq!(blocks.len(), 3675);
+            IResult::Done(_, f) => {
+                assert_eq!(f, Fits::new(long_cadence_header()));
             },
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
