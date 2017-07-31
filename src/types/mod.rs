@@ -2,8 +2,8 @@
 
 use std::str::FromStr;
 
-#[derive(Debug, PartialEq)]
 /// Representation of a FITS file.
+#[derive(Debug, PartialEq)]
 pub struct Fits {
     /// The primary header
     pub primary_header: PrimaryHeader
@@ -16,8 +16,8 @@ impl Fits {
     }
 }
 
-#[derive(Debug, PartialEq)]
 /// The primary header of a FITS file.
+#[derive(Debug, PartialEq)]
 pub struct PrimaryHeader {
     /// The keyword records of the primary header.
     pub keyword_records: Vec<KeywordRecord>,
@@ -30,8 +30,8 @@ impl PrimaryHeader {
     }
 }
 
-#[derive(Debug, PartialEq)]
 /// A keyword record contains information about a FITS header.
+#[derive(Debug, PartialEq)]
 pub struct KeywordRecord {
     /// The keyword of this record.
     keyword: Keyword,
@@ -44,13 +44,13 @@ impl KeywordRecord {
     }
 }
 
-#[derive(Debug, PartialEq)]
 /// A unit tuple that will act as a placeholder for blank records.
+#[derive(Debug, PartialEq)]
 pub struct BlankRecord;
 
+/// The various keywords that can be found in headers.
 #[derive(Debug, PartialEq)]
 #[allow(non_camel_case_types, missing_docs)]
-/// The various keywords that can be found in headers.
 pub enum Keyword {
     SIMPLE,
     BITPIX,
