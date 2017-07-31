@@ -183,36 +183,94 @@
 <span id="138">138</span>
 <span id="139">139</span>
 <span id="140">140</span>
+<span id="141">141</span>
+<span id="142">142</span>
+<span id="143">143</span>
+<span id="144">144</span>
+<span id="145">145</span>
+<span id="146">146</span>
+<span id="147">147</span>
+<span id="148">148</span>
+<span id="149">149</span>
+<span id="150">150</span>
+<span id="151">151</span>
+<span id="152">152</span>
+<span id="153">153</span>
+<span id="154">154</span>
+<span id="155">155</span>
+<span id="156">156</span>
+<span id="157">157</span>
+<span id="158">158</span>
+<span id="159">159</span>
+<span id="160">160</span>
+<span id="161">161</span>
+<span id="162">162</span>
+<span id="163">163</span>
+<span id="164">164</span>
+<span id="165">165</span>
+<span id="166">166</span>
+<span id="167">167</span>
+<span id="168">168</span>
+<span id="169">169</span>
+<span id="170">170</span>
+<span id="171">171</span>
+<span id="172">172</span>
+<span id="173">173</span>
+<span id="174">174</span>
+<span id="175">175</span>
+<span id="176">176</span>
+<span id="177">177</span>
+<span id="178">178</span>
+<span id="179">179</span>
+<span id="180">180</span>
+<span id="181">181</span>
+<span id="182">182</span>
+<span id="183">183</span>
+<span id="184">184</span>
+<span id="185">185</span>
+<span id="186">186</span>
+<span id="187">187</span>
+<span id="188">188</span>
+<span id="189">189</span>
+<span id="190">190</span>
+<span id="191">191</span>
+<span id="192">192</span>
+<span id="193">193</span>
+<span id="194">194</span>
+<span id="195">195</span>
+<span id="196">196</span>
+<span id="197">197</span>
+<span id="198">198</span>
+<span id="199">199</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! The parser module is responsible for parsing FITS files.</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
-<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">types</span>::{<span class="ident">Keyword</span>, <span class="ident">BlankRecord</span>};
+<span class="kw">use</span> <span class="kw">super</span>::<span class="ident">types</span>::{<span class="ident">Fits</span>, <span class="ident">PrimaryHeader</span>, <span class="ident">KeywordRecord</span>, <span class="ident">Keyword</span>, <span class="ident">BlankRecord</span>};
 
-<span class="macro">named</span><span class="macro">!</span>(<span class="ident">fits</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], ((<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Keyword</span><span class="op">&gt;</span>, <span class="ident">Keyword</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BlankRecord</span><span class="op">&gt;</span>), <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>) <span class="op">&gt;</span>,
-       <span class="macro">pair</span><span class="macro">!</span>(<span class="ident">primary_header</span>, <span class="macro">many0</span><span class="macro">!</span>( <span class="macro">take</span><span class="macro">!</span>(<span class="number">2880</span>) )));
-
-<span class="macro">named</span><span class="macro">!</span>(<span class="ident">primary_header</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], (<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">Keyword</span><span class="op">&gt;</span>, <span class="ident">Keyword</span>, <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">BlankRecord</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
-       <span class="macro">tuple</span><span class="macro">!</span>(
-           <span class="macro">many0</span><span class="macro">!</span>(<span class="ident">keyword_record</span>),
-           <span class="ident">end_record</span>,
-           <span class="macro">many0</span><span class="macro">!</span>(<span class="ident">blank_record</span>)
+<span class="macro">named</span><span class="macro">!</span>(<span class="ident">fits</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Fits</span><span class="op">&gt;</span>,
+       <span class="macro">do_parse</span><span class="macro">!</span>(
+           <span class="ident">ph</span>: <span class="ident">primary_header</span> <span class="op">&gt;&gt;</span>
+               <span class="macro">many0</span><span class="macro">!</span>(<span class="macro">take</span><span class="macro">!</span>(<span class="number">2880</span>)) <span class="op">&gt;&gt;</span>
+               (<span class="ident">Fits</span>::<span class="ident">new</span>(<span class="ident">ph</span>))
        ));
 
-<span class="macro">named</span><span class="macro">!</span>(<span class="ident">keyword_record</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Keyword</span><span class="op">&gt;</span>,
-       <span class="macro">map_res</span><span class="macro">!</span>(
-           <span class="macro">map_res</span><span class="macro">!</span>(
-               <span class="macro">map</span><span class="macro">!</span>(
-                   <span class="macro">tuple</span><span class="macro">!</span>(
-                       <span class="macro">take</span><span class="macro">!</span>(<span class="number">8</span>),
-                       <span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot;=&quot;</span>),
-                       <span class="macro">take</span><span class="macro">!</span>(<span class="number">71</span>)
-                   ), <span class="op">|</span>(<span class="ident">slice</span>, _, _) : (<span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="kw-2">&amp;</span>[<span class="ident">u8</span>])<span class="op">|</span> {
-                       <span class="string">&quot;OBJECT&quot;</span>.<span class="ident">as_bytes</span>() <span class="comment">// TODO obviously wrong, correct it</span>
-                   }),
-               <span class="ident">str</span>::<span class="ident">from_utf8</span>),
-           <span class="ident">Keyword</span>::<span class="ident">from_str</span>));
+<span class="macro">named</span><span class="macro">!</span>(<span class="ident">primary_header</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">PrimaryHeader</span><span class="op">&gt;</span>,
+       <span class="macro">do_parse</span><span class="macro">!</span>(
+           <span class="ident">records</span>: <span class="macro">many0</span><span class="macro">!</span>(<span class="ident">keyword_record</span>) <span class="op">&gt;&gt;</span>
+               <span class="ident">end_record</span> <span class="op">&gt;&gt;</span>
+               <span class="macro">many0</span><span class="macro">!</span>(<span class="ident">blank_record</span>) <span class="op">&gt;&gt;</span>
+               (<span class="ident">PrimaryHeader</span>::<span class="ident">new</span>(<span class="ident">records</span>))
+       ));
+
+<span class="macro">named</span><span class="macro">!</span>(<span class="ident">keyword_record</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">KeywordRecord</span><span class="op">&gt;</span>,
+       <span class="macro">do_parse</span><span class="macro">!</span>(
+           <span class="ident">key</span>: <span class="ident">keyword</span>  <span class="op">&gt;&gt;</span>
+               <span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot;=&quot;</span>) <span class="op">&gt;&gt;</span>
+               <span class="macro">take</span><span class="macro">!</span>(<span class="number">71</span>) <span class="op">&gt;&gt;</span>
+               (<span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">key</span>))
+       ));
 
 <span class="macro">named</span><span class="macro">!</span>(<span class="ident">keyword</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Keyword</span><span class="op">&gt;</span>,
        <span class="macro">map_res</span><span class="macro">!</span>(
@@ -237,7 +295,7 @@
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="ident">nom</span>::{<span class="ident">IResult</span>};
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">types</span>::{<span class="ident">Keyword</span>, <span class="ident">BlankRecord</span>};
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">types</span>::{<span class="ident">Fits</span>, <span class="ident">PrimaryHeader</span>, <span class="ident">KeywordRecord</span>, <span class="ident">Keyword</span>, <span class="ident">BlankRecord</span>};
     <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">fits</span>, <span class="ident">primary_header</span>, <span class="ident">keyword_record</span>, <span class="ident">keyword</span>, <span class="ident">end_record</span>, <span class="ident">blank_record</span>};
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -247,8 +305,8 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">fits</span>(<span class="ident">data</span>);
 
         <span class="kw">match</span> <span class="ident">result</span> {
-            <span class="ident">IResult</span>::<span class="ident">Done</span>(_, (<span class="ident">header</span>, <span class="ident">blocks</span>)) <span class="op">=&gt;</span> {
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">blocks</span>.<span class="ident">len</span>(), <span class="number">3675</span>);
+            <span class="ident">IResult</span>::<span class="ident">Done</span>(_, <span class="ident">f</span>) <span class="op">=&gt;</span> {
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="ident">Fits</span>::<span class="ident">new</span>(<span class="ident">long_cadence_header</span>()));
             },
             <span class="ident">IResult</span>::<span class="ident">Error</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect an error&quot;</span>),
             <span class="ident">IResult</span>::<span class="ident">Incomplete</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect to be incomplete&quot;</span>)
@@ -262,10 +320,70 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">primary_header</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>[<span class="number">0</span>..(<span class="number">2</span><span class="kw-2">*</span><span class="number">2880</span>)]);
 
         <span class="kw">match</span> <span class="ident">result</span> {
-            <span class="ident">IResult</span>::<span class="ident">Done</span>(_, (<span class="ident">headers</span>, _, _)) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">headers</span>.<span class="ident">len</span>(), <span class="number">55</span>),
+            <span class="ident">IResult</span>::<span class="ident">Done</span>(_, <span class="ident">h</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">h</span>, <span class="ident">long_cadence_header</span>()),
             <span class="ident">IResult</span>::<span class="ident">Error</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect an error&quot;</span>),
             <span class="ident">IResult</span>::<span class="ident">Incomplete</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect to be incomplete&quot;</span>)
         }
+    }
+
+    <span class="kw">fn</span> <span class="ident">long_cadence_header</span>() <span class="op">-&gt;</span> <span class="ident">PrimaryHeader</span> {
+        <span class="ident">PrimaryHeader</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>(
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">SIMPLE</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">BITPIX</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXIS</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTEND</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NEXTEND</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTNAME</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTVER</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">ORIGIN</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATE</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CREATOR</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PROCVER</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">FILEVER</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TIMVERSN</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TELESCOP</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">INSTRUME</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OBJECT</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KEPLERID</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CHANNEL</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">MODULE</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OUTPUT</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CAMPAIGN</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATA_REL</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OBSMODE</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">MISSION</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TTABLEID</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RADESYS</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RA_OBJ</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DEC_OBJ</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EQUINOX</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMRA</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMDEC</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMTOTAL</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PARALLAX</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GLON</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GLAT</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GMAG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RMAG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">IMAG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">ZMAG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">JMAG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">HMAG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KMAG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KEPMAG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GRCOLOR</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">JKCOLOR</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GKCOLOR</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TEFF</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">LOGG</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">FEH</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EBMINUSV</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">AV</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RADIUS</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TMINDEX</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CHECKSUM</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATASUM</span>),
+        ))
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -276,7 +394,7 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">keyword_record</span>(<span class="ident">data</span>);
 
         <span class="kw">match</span> <span class="ident">result</span> {
-            <span class="ident">IResult</span>::<span class="ident">Done</span>(_,<span class="ident">k</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">k</span>, <span class="ident">Keyword</span>::<span class="ident">OBJECT</span>),
+            <span class="ident">IResult</span>::<span class="ident">Done</span>(_,<span class="ident">k</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">k</span>, <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OBJECT</span>)),
             <span class="ident">IResult</span>::<span class="ident">Error</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect an error&quot;</span>),
             <span class="ident">IResult</span>::<span class="ident">Incomplete</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect to be incomplete&quot;</span>)
         }
