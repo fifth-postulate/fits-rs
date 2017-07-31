@@ -22,6 +22,9 @@ named!(record<&[u8], (&[u8], Option<&[u8]>)>,
                ((v, c))
        ));
 
+named!(certain_length_record<&[u8], (&[u8], Option<&[u8]>)>,
+       flat_map!(certain_length, record));
+
 #[test]
 fn certain_length_test() {
     assert_eq!(certain_length(&b"0123456789"[..]), IResult::Done(&b""[..], &b"0123456789"[..]));
@@ -56,4 +59,10 @@ fn record_test() {
                IResult::Done(&b"  "[..], (&b"abcd"[..], Option::Some(&b"123"[..]))));
     assert_eq!(record(&b"abcd  "[..]),
                IResult::Done(&b"  "[..], (&b"abcd"[..], Option::None)));
+}
+
+#[test]
+fn certain_length_record_test() {
+    assert_eq!(certain_length_record(&b"01234/abcd"[..]),
+               IResult::Done(&b""[..], (&b"01234"[..], Option::Some(&b"abcd"[..]))));
 }
