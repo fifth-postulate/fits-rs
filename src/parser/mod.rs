@@ -2,6 +2,7 @@
 
 use std::str;
 use std::str::FromStr;
+use nom::{is_alphanumeric};
 use super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
 
 named!(fits<&[u8], Fits>,
@@ -35,6 +36,29 @@ named!(keyword<&[u8], Keyword>,
            Keyword::from_str
        ));
 
+named!(valuecomment<&[u8], (&[u8],Option<&[u8]>)>,
+       flat_map!(
+           take!(70),
+           pair!(
+               value,
+               opt!(comment)
+           )));
+
+named!(value<&[u8], &[u8]>,
+       is_not!("/") // TODO Differentiate on the possible value types
+);
+
+named!(comment<&[u8], &[u8]>,
+       do_parse!(
+           tag!("/") >>
+               comment: take_while!(is_comment_character) >>
+               (comment)
+       ));
+
+fn is_comment_character(chr: u8) -> bool {
+    32u8 <= chr && chr <= 126u8
+}
+
 named!(end_record<&[u8], Keyword>,
        map!(
            flat_map!(
@@ -54,7 +78,7 @@ named!(blank_record<&[u8], BlankRecord>,
 mod tests {
     use nom::{IResult};
     use super::super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
-    use super::{fits, primary_header, keyword_record, keyword, end_record, blank_record};
+    use super::{fits, primary_header, keyword_record, keyword, valuecomment, end_record, blank_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -153,6 +177,23 @@ mod tests {
 
         match result {
             IResult::Done(_,k) => assert_eq!(k, KeywordRecord::new(Keyword::OBJECT)),
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn valuecomment_should_parse_a_valuecomment(){
+        let data = "'EPIC 200164267'     / string version of target id                    "
+            .as_bytes();
+
+        let result = valuecomment(data);
+
+        match result {
+            IResult::Done(_, (value, comment)) => {
+                assert_eq!(value, &b"'EPIC 200164267'     "[..]);
+                assert_eq!(comment, Option::Some(&b" string version of target id                    "[..]));
+            },
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
