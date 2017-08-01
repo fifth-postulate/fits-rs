@@ -37,7 +37,10 @@ named!(keyword<&[u8], Keyword>,
 
 named!(end_record<&[u8], Keyword>,
        map!(
-           pair!(tag!("END"), count!(tag!(" "), 77)),
+           flat_map!(
+               take!(80),
+               pair!(tag!("END"), many0!(tag!(" ")))
+           ),
            |_| { Keyword::END }
        ));
 
