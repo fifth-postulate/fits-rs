@@ -22,8 +22,8 @@ named!(primary_header<&[u8], PrimaryHeader>,
 named!(keyword_record<&[u8], KeywordRecord>,
        do_parse!(
            key: keyword  >>
-               tag!("=") >>
-               take!(71) >>
+               tag!("= ") >>
+               take!(70) >>
                (KeywordRecord::new(key))
        ));
 
