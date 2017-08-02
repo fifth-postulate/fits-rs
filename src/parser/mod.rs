@@ -36,7 +36,7 @@ named!(keyword<&[u8], Keyword>,
            Keyword::from_str
        ));
 
-named!(valuecomment<&[u8], (&[u8],Option<&[u8]>)>,
+named!(valuecomment<&[u8], (&str, Option<&str>)>,
        flat_map!(
            take!(70),
            pair!(
@@ -44,15 +44,21 @@ named!(valuecomment<&[u8], (&[u8],Option<&[u8]>)>,
                opt!(comment)
            )));
 
-named!(value<&[u8], &[u8]>,
-       is_not!("/") // TODO Differentiate on the possible value types
+named!(value<&[u8], &str>,
+       map_res!(
+           is_not!("/"), // TODO Differentiate on the possible value types
+           str::from_utf8
+       )
 );
 
-named!(comment<&[u8], &[u8]>,
-       do_parse!(
-           tag!("/") >>
-               comment: take_while!(is_comment_character) >>
-               (comment)
+named!(comment<&[u8], &str>,
+       map_res!(
+           do_parse!(
+               tag!("/") >>
+                   comment: take_while!(is_comment_character) >>
+                   (comment)
+           ),
+           str::from_utf8
        ));
 
 fn is_comment_character(chr: u8) -> bool {
@@ -191,8 +197,8 @@ mod tests {
 
         match result {
             IResult::Done(_, (value, comment)) => {
-                assert_eq!(value, &b"'EPIC 200164267'     "[..]);
-                assert_eq!(comment, Option::Some(&b" string version of target id                    "[..]));
+                assert_eq!(value, "'EPIC 200164267'     ");
+                assert_eq!(comment, Option::Some(" string version of target id                    "));
             },
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
