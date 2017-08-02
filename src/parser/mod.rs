@@ -280,6 +280,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(non_snake_case)]
     fn end_record_should_parse_an_END_record(){
         let data = "END                                                                             "
             .as_bytes();
@@ -294,6 +295,7 @@ mod tests {
     }
 
     #[test]
+    #[allow(non_snake_case)]
     fn blank_record_should_parse_a_BLANK_record(){
         let data = "                                                                                "
             .as_bytes();

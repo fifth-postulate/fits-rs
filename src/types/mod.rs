@@ -195,6 +195,7 @@ mod tests {
     use std::str::FromStr;
     use super::*;
 
+    #[test]
     fn fits_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
             Fits { primary_header: PrimaryHeader::new(vec!()) },
@@ -202,6 +203,7 @@ mod tests {
         );
     }
 
+    #[test]
     fn primary_header_constructed_from_the_new_function_shoul_eq_hand_construction() {
         assert_eq!(
             PrimaryHeader { keyword_records: vec!(
