@@ -2,10 +2,9 @@
 
 use std::str;
 use std::str::FromStr;
-use nom::{is_alphanumeric};
 use super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
 
-named!(fits<&[u8], Fits>,
+named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub fits<&[u8], Fits>,
        do_parse!(
            ph: primary_header >>
                many0!(take!(2880)) >>
