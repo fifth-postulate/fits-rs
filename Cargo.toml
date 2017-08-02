@@ -5,7 +5,7 @@ authors = ["Daan van Berkel <daan.v.berkel.1980@gmail.com>"]
 
 description = "FITS encoder and decoder in Rust"
 documentation = "http://fifth-postulate.nl/fits-rs/"
-homepage = "https://github.com/fifth-postulate/fits-rs"
+homepage = "https://github.com/fifth-postulate/fits-rs/wiki"
 repository = "https://github.com/fifth-postulate/fits-rs"
 readme = "README.md"
 keywords = ["image", "FITS"]
