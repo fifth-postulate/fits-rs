@@ -4,43 +4,48 @@ use std::str::FromStr;
 
 /// Representation of a FITS file.
 #[derive(Debug, PartialEq)]
-pub struct Fits {
+pub struct Fits<'a> {
     /// The primary header
-    pub primary_header: PrimaryHeader
+    pub primary_header: PrimaryHeader<'a>
 }
 
-impl Fits {
+impl<'a> Fits<'a> {
     /// Create a Fits structure with a given primary header
-    pub fn new(primary_header: PrimaryHeader) -> Fits {
+    pub fn new(primary_header: PrimaryHeader<'a>) -> Fits<'a> {
         Fits { primary_header: primary_header }
     }
 }
 
 /// The primary header of a FITS file.
 #[derive(Debug, PartialEq)]
-pub struct PrimaryHeader {
+pub struct PrimaryHeader<'a> {
     /// The keyword records of the primary header.
-    pub keyword_records: Vec<KeywordRecord>,
+    pub keyword_records: Vec<KeywordRecord<'a>>,
 }
 
-impl PrimaryHeader {
+impl<'a> PrimaryHeader<'a> {
     /// Create a PrimaryHeader with a given set of keyword_records
-    pub fn new(keyword_records: Vec<KeywordRecord>) -> PrimaryHeader {
+    pub fn new(keyword_records: Vec<KeywordRecord<'a>>) -> PrimaryHeader<'a> {
         PrimaryHeader { keyword_records: keyword_records }
     }
 }
 
-/// A keyword record contains information about a FITS header.
+/// A keyword record contains information about a FITS header. It consists of a
+/// keyword, the corresponding value and an optional comment.
 #[derive(Debug, PartialEq)]
-pub struct KeywordRecord {
+pub struct KeywordRecord<'a> {
     /// The keyword of this record.
     keyword: Keyword,
+    /// The value of this record.
+    value: &'a str,
+    /// The comment of this record.
+    comment: Option<&'a str>
 }
 
-impl KeywordRecord {
+impl<'a> KeywordRecord<'a> {
     /// Create a `KeywordRecord` from a specific `Keyword`.
-    pub fn new(keyword: Keyword) -> KeywordRecord {
-        KeywordRecord { keyword : keyword }
+    pub fn new(keyword: Keyword, value: &'a str, comment: Option<&'a str>) -> KeywordRecord<'a> {
+        KeywordRecord { keyword: keyword, value: value, comment: comment }
     }
 }
 
@@ -200,12 +205,12 @@ mod tests {
     fn primary_header_constructed_from_the_new_function_shoul_eq_hand_construction() {
         assert_eq!(
             PrimaryHeader { keyword_records: vec!(
-                KeywordRecord::new(Keyword::SIMPLE),
-                KeywordRecord::new(Keyword::NEXTEND),
+                KeywordRecord::new(Keyword::SIMPLE, "T", Option::None),
+                KeywordRecord::new(Keyword::NEXTEND, "0", Option::Some("no extensions")),
             )},
             PrimaryHeader::new(vec!(
-                KeywordRecord::new(Keyword::SIMPLE),
-                KeywordRecord::new(Keyword::NEXTEND),
+                KeywordRecord::new(Keyword::SIMPLE, "T", Option::None),
+                KeywordRecord::new(Keyword::NEXTEND, "0", Option::Some("no extensions")),
             ))
         );
     }
@@ -213,8 +218,8 @@ mod tests {
     #[test]
     fn keyword_record_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
-            KeywordRecord { keyword: Keyword::ORIGIN },
-            KeywordRecord::new(Keyword::ORIGIN));
+            KeywordRecord { keyword: Keyword::ORIGIN, value: "", comment: Option::None },
+            KeywordRecord::new(Keyword::ORIGIN, "", Option::None));
     }
 
     #[test]
