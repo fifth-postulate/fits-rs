@@ -56,7 +56,7 @@ impl<'a> Display for KeywordRecord<'a> {
     }
 }
 
-/// A unit tuple that will act as a placeholder for blank records.
+/// A unit struct that will act as a placeholder for blank records.
 #[derive(Debug, PartialEq)]
 pub struct BlankRecord;
 
