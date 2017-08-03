@@ -56,6 +56,22 @@ impl<'a> Display for KeywordRecord<'a> {
     }
 }
 
+/// The possible values of a KeywordRecord.
+pub enum Value<'a> {
+    /// A string enclosed in single quotes `'`.
+    CharacterString(&'a str),
+    /// A logical constant signified by either an uppercase `F` or an uppercase `T`.
+    Logical(bool),
+    /// An optionally signed decimal integer.
+    Integer(i64),
+    /// Fixed format real floating point number.
+    Real(f64),
+    /// Complex number represented by a real an imaginary component.
+    Complex((f64, f64)),
+    /// Not yet correctly parsed value // TODO Remove this value as soon as possible.
+    Raw(&'a str),
+}
+
 /// A unit struct that will act as a placeholder for blank records.
 #[derive(Debug, PartialEq)]
 pub struct BlankRecord;
