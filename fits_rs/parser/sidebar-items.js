@@ -1,1 +1,1 @@
-initSidebarItems({});
+initSidebarItems({"fn":[["fits","Will parse data from a FITS file into a `Fits` structure"]]});

@@ -332,6 +332,13 @@
 <span id="287">287</span>
 <span id="288">288</span>
 <span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! The types modules describes all the structures to express FITS files.</span>
 
@@ -339,43 +346,48 @@
 
 <span class="doccomment">/// Representation of a FITS file.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Fits</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Fits</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The primary header</span>
-    <span class="kw">pub</span> <span class="ident">primary_header</span>: <span class="ident">PrimaryHeader</span>
+    <span class="kw">pub</span> <span class="ident">primary_header</span>: <span class="ident">PrimaryHeader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>
 }
 
-<span class="kw">impl</span> <span class="ident">Fits</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Fits</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a Fits structure with a given primary header</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">primary_header</span>: <span class="ident">PrimaryHeader</span>) <span class="op">-&gt;</span> <span class="ident">Fits</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">primary_header</span>: <span class="ident">PrimaryHeader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Fits</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">Fits</span> { <span class="ident">primary_header</span>: <span class="ident">primary_header</span> }
     }
 }
 
 <span class="doccomment">/// The primary header of a FITS file.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrimaryHeader</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">PrimaryHeader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The keyword records of the primary header.</span>
-    <span class="kw">pub</span> <span class="ident">keyword_records</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">KeywordRecord</span><span class="op">&gt;</span>,
+    <span class="kw">pub</span> <span class="ident">keyword_records</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">KeywordRecord</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;&gt;</span>,
 }
 
-<span class="kw">impl</span> <span class="ident">PrimaryHeader</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">PrimaryHeader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a PrimaryHeader with a given set of keyword_records</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">keyword_records</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">KeywordRecord</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PrimaryHeader</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">keyword_records</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">KeywordRecord</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="ident">PrimaryHeader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">PrimaryHeader</span> { <span class="ident">keyword_records</span>: <span class="ident">keyword_records</span> }
     }
 }
 
-<span class="doccomment">/// A keyword record contains information about a FITS header.</span>
+<span class="doccomment">/// A keyword record contains information about a FITS header. It consists of a</span>
+<span class="doccomment">/// keyword, the corresponding value and an optional comment.</span>
 <span class="attribute">#[<span class="ident">derive</span>(<span class="ident">Debug</span>, <span class="ident">PartialEq</span>)]</span>
-<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KeywordRecord</span> {
+<span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">KeywordRecord</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The keyword of this record.</span>
     <span class="ident">keyword</span>: <span class="ident">Keyword</span>,
+    <span class="doccomment">/// The value of this record.</span>
+    <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>,
+    <span class="doccomment">/// The comment of this record.</span>
+    <span class="ident">comment</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span>
 }
 
-<span class="kw">impl</span> <span class="ident">KeywordRecord</span> {
+<span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">KeywordRecord</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a `KeywordRecord` from a specific `Keyword`.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">keyword</span>: <span class="ident">Keyword</span>) <span class="op">-&gt;</span> <span class="ident">KeywordRecord</span> {
-        <span class="ident">KeywordRecord</span> { <span class="ident">keyword</span> : <span class="ident">keyword</span> }
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">keyword</span>: <span class="ident">Keyword</span>, <span class="ident">value</span>: <span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span>, <span class="ident">comment</span>: <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="lifetime">&#39;a</span> <span class="ident">str</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">KeywordRecord</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+        <span class="ident">KeywordRecord</span> { <span class="ident">keyword</span>: <span class="ident">keyword</span>, <span class="ident">value</span>: <span class="ident">value</span>, <span class="ident">comment</span>: <span class="ident">comment</span> }
     }
 }
 
@@ -525,6 +537,7 @@
     <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
     <span class="kw">use</span> <span class="kw">super</span>::<span class="kw-2">*</span>;
 
+    <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">fits_constructed_from_the_new_function_should_eq_hand_construction</span>() {
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">Fits</span> { <span class="ident">primary_header</span>: <span class="ident">PrimaryHeader</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>()) },
@@ -532,15 +545,16 @@
         );
     }
 
+    <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">primary_header_constructed_from_the_new_function_shoul_eq_hand_construction</span>() {
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">PrimaryHeader</span> { <span class="ident">keyword_records</span>: <span class="macro">vec</span><span class="macro">!</span>(
-                <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">SIMPLE</span>),
-                <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NEXTEND</span>),
+                <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">SIMPLE</span>, <span class="string">&quot;T&quot;</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
+                <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NEXTEND</span>, <span class="string">&quot;0&quot;</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot;no extensions&quot;</span>)),
             )},
             <span class="ident">PrimaryHeader</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>(
-                <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">SIMPLE</span>),
-                <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NEXTEND</span>),
+                <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">SIMPLE</span>, <span class="string">&quot;T&quot;</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
+                <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NEXTEND</span>, <span class="string">&quot;0&quot;</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot;no extensions&quot;</span>)),
             ))
         );
     }
@@ -548,8 +562,8 @@
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">keyword_record_constructed_from_the_new_function_should_eq_hand_construction</span>() {
         <span class="macro">assert_eq</span><span class="macro">!</span>(
-            <span class="ident">KeywordRecord</span> { <span class="ident">keyword</span>: <span class="ident">Keyword</span>::<span class="ident">ORIGIN</span> },
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">ORIGIN</span>));
+            <span class="ident">KeywordRecord</span> { <span class="ident">keyword</span>: <span class="ident">Keyword</span>::<span class="ident">ORIGIN</span>, <span class="ident">value</span>: <span class="string">&quot;&quot;</span>, <span class="ident">comment</span>: <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span> },
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">ORIGIN</span>, <span class="string">&quot;&quot;</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>));
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>

@@ -286,15 +286,82 @@
 <span id="241">241</span>
 <span id="242">242</span>
 <span id="243">243</span>
+<span id="244">244</span>
+<span id="245">245</span>
+<span id="246">246</span>
+<span id="247">247</span>
+<span id="248">248</span>
+<span id="249">249</span>
+<span id="250">250</span>
+<span id="251">251</span>
+<span id="252">252</span>
+<span id="253">253</span>
+<span id="254">254</span>
+<span id="255">255</span>
+<span id="256">256</span>
+<span id="257">257</span>
+<span id="258">258</span>
+<span id="259">259</span>
+<span id="260">260</span>
+<span id="261">261</span>
+<span id="262">262</span>
+<span id="263">263</span>
+<span id="264">264</span>
+<span id="265">265</span>
+<span id="266">266</span>
+<span id="267">267</span>
+<span id="268">268</span>
+<span id="269">269</span>
+<span id="270">270</span>
+<span id="271">271</span>
+<span id="272">272</span>
+<span id="273">273</span>
+<span id="274">274</span>
+<span id="275">275</span>
+<span id="276">276</span>
+<span id="277">277</span>
+<span id="278">278</span>
+<span id="279">279</span>
+<span id="280">280</span>
+<span id="281">281</span>
+<span id="282">282</span>
+<span id="283">283</span>
+<span id="284">284</span>
+<span id="285">285</span>
+<span id="286">286</span>
+<span id="287">287</span>
+<span id="288">288</span>
+<span id="289">289</span>
+<span id="290">290</span>
+<span id="291">291</span>
+<span id="292">292</span>
+<span id="293">293</span>
+<span id="294">294</span>
+<span id="295">295</span>
+<span id="296">296</span>
+<span id="297">297</span>
+<span id="298">298</span>
+<span id="299">299</span>
+<span id="300">300</span>
+<span id="301">301</span>
+<span id="302">302</span>
+<span id="303">303</span>
+<span id="304">304</span>
+<span id="305">305</span>
+<span id="306">306</span>
+<span id="307">307</span>
+<span id="308">308</span>
+<span id="309">309</span>
+<span id="310">310</span>
+<span id="311">311</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! The parser module is responsible for parsing FITS files.</span>
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
-<span class="kw">use</span> <span class="ident">nom</span>::{<span class="ident">is_alphanumeric</span>};
 <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">types</span>::{<span class="ident">Fits</span>, <span class="ident">PrimaryHeader</span>, <span class="ident">KeywordRecord</span>, <span class="ident">Keyword</span>, <span class="ident">BlankRecord</span>};
 
-<span class="macro">named</span><span class="macro">!</span>(<span class="ident">fits</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Fits</span><span class="op">&gt;</span>,
+<span class="macro">named</span><span class="macro">!</span>(<span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;Will parse data from a FITS file into a `Fits` structure&quot;</span>]</span>, <span class="kw">pub</span> <span class="ident">fits</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Fits</span><span class="op">&gt;</span>,
        <span class="macro">do_parse</span><span class="macro">!</span>(
            <span class="ident">ph</span>: <span class="ident">primary_header</span> <span class="op">&gt;&gt;</span>
                <span class="macro">many0</span><span class="macro">!</span>(<span class="macro">take</span><span class="macro">!</span>(<span class="number">2880</span>)) <span class="op">&gt;&gt;</span>
@@ -313,8 +380,8 @@
        <span class="macro">do_parse</span><span class="macro">!</span>(
            <span class="ident">key</span>: <span class="ident">keyword</span>  <span class="op">&gt;&gt;</span>
                <span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot;= &quot;</span>) <span class="op">&gt;&gt;</span>
-               <span class="macro">take</span><span class="macro">!</span>(<span class="number">70</span>) <span class="op">&gt;&gt;</span>
-               (<span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">key</span>))
+           <span class="ident">vc</span>: <span class="ident">valuecomment</span> <span class="op">&gt;&gt;</span>
+               (<span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">key</span>, <span class="ident">vc</span>.<span class="number">0</span>, <span class="ident">vc</span>.<span class="number">1</span>))
        ));
 
 <span class="macro">named</span><span class="macro">!</span>(<span class="ident">keyword</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Keyword</span><span class="op">&gt;</span>,
@@ -325,7 +392,7 @@
            <span class="ident">Keyword</span>::<span class="ident">from_str</span>
        ));
 
-<span class="macro">named</span><span class="macro">!</span>(<span class="ident">valuecomment</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], (<span class="kw-2">&amp;</span>[<span class="ident">u8</span>],<span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>)<span class="op">&gt;</span>,
+<span class="macro">named</span><span class="macro">!</span>(<span class="ident">valuecomment</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], (<span class="kw-2">&amp;</span><span class="ident">str</span>, <span class="prelude-ty">Option</span><span class="op">&lt;</span><span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>)<span class="op">&gt;</span>,
        <span class="macro">flat_map</span><span class="macro">!</span>(
            <span class="macro">take</span><span class="macro">!</span>(<span class="number">70</span>),
            <span class="macro">pair</span><span class="macro">!</span>(
@@ -333,15 +400,21 @@
                <span class="macro">opt</span><span class="macro">!</span>(<span class="ident">comment</span>)
            )));
 
-<span class="macro">named</span><span class="macro">!</span>(<span class="ident">value</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
-       <span class="macro">is_not</span><span class="macro">!</span>(<span class="string">&quot;/&quot;</span>) <span class="comment">// TODO Differentiate on the possible value types</span>
+<span class="macro">named</span><span class="macro">!</span>(<span class="ident">value</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
+       <span class="macro">map_res</span><span class="macro">!</span>(
+           <span class="macro">is_not</span><span class="macro">!</span>(<span class="string">&quot;/&quot;</span>), <span class="comment">// TODO Differentiate on the possible value types</span>
+           <span class="ident">str</span>::<span class="ident">from_utf8</span>
+       )
 );
 
-<span class="macro">named</span><span class="macro">!</span>(<span class="ident">comment</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span>,
-       <span class="macro">do_parse</span><span class="macro">!</span>(
-           <span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot;/&quot;</span>) <span class="op">&gt;&gt;</span>
-               <span class="ident">comment</span>: <span class="macro">take_while</span><span class="macro">!</span>(<span class="ident">is_comment_character</span>) <span class="op">&gt;&gt;</span>
-               (<span class="ident">comment</span>)
+<span class="macro">named</span><span class="macro">!</span>(<span class="ident">comment</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="kw-2">&amp;</span><span class="ident">str</span><span class="op">&gt;</span>,
+       <span class="macro">map_res</span><span class="macro">!</span>(
+           <span class="macro">do_parse</span><span class="macro">!</span>(
+               <span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot;/&quot;</span>) <span class="op">&gt;&gt;</span>
+                   <span class="ident">comment</span>: <span class="macro">take_while</span><span class="macro">!</span>(<span class="ident">is_comment_character</span>) <span class="op">&gt;&gt;</span>
+                   (<span class="ident">comment</span>)
+           ),
+           <span class="ident">str</span>::<span class="ident">from_utf8</span>
        ));
 
 <span class="kw">fn</span> <span class="ident">is_comment_character</span>(<span class="ident">chr</span>: <span class="ident">u8</span>) <span class="op">-&gt;</span> <span class="ident">bool</span> {
@@ -397,63 +470,118 @@
         }
     }
 
-    <span class="kw">fn</span> <span class="ident">long_cadence_header</span>() <span class="op">-&gt;</span> <span class="ident">PrimaryHeader</span> {
+    <span class="kw">fn</span> <span class="ident">long_cadence_header</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>() <span class="op">-&gt;</span> <span class="ident">PrimaryHeader</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">PrimaryHeader</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>(
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">SIMPLE</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">BITPIX</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXIS</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTEND</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NEXTEND</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTNAME</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTVER</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">ORIGIN</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATE</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CREATOR</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PROCVER</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">FILEVER</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TIMVERSN</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TELESCOP</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">INSTRUME</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OBJECT</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KEPLERID</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CHANNEL</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">MODULE</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OUTPUT</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CAMPAIGN</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATA_REL</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OBSMODE</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">MISSION</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TTABLEID</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RADESYS</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RA_OBJ</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DEC_OBJ</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EQUINOX</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMRA</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMDEC</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMTOTAL</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PARALLAX</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GLON</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GLAT</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GMAG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RMAG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">IMAG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">ZMAG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">JMAG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">HMAG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KMAG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KEPMAG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GRCOLOR</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">JKCOLOR</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GKCOLOR</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TEFF</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">LOGG</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">FEH</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EBMINUSV</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">AV</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RADIUS</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TMINDEX</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CHECKSUM</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATASUM</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">SIMPLE</span>, <span class="string">&quot;                   T &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; conforms to FITS standards                     &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">BITPIX</span>, <span class="string">&quot;                   8 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; array data type                                &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXIS</span>, <span class="string">&quot;                   0 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; number of array dimensions                     &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTEND</span>, <span class="string">&quot;                   T &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; file contains extensions                       &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NEXTEND</span>, <span class="string">&quot;                   2 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; number of standard extensions                  &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTNAME</span>, <span class="string">&quot;&#39;PRIMARY &#39;           &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; name of extension                              &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EXTVER</span>, <span class="string">&quot;                   1 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; extension version number (not format version)  &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">ORIGIN</span>, <span class="string">&quot;&#39;Unofficial data product&#39; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; institution responsible for creating this &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATE</span>, <span class="string">&quot;&#39;2017-03-08&#39;         &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; file creation date.                            &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CREATOR</span>, <span class="string">&quot;&#39;kadenza &#39;           &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; pipeline job and program u                     &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PROCVER</span>, <span class="string">&quot;&#39;2.1.dev &#39;           &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; SW version                                     &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">FILEVER</span>, <span class="string">&quot;&#39;0.0     &#39;           &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; file format version                            &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TIMVERSN</span>, <span class="string">&quot;&#39;&#39; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; OGIP memo number for file format                                 &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TELESCOP</span>, <span class="string">&quot;&#39;Kepler  &#39;           &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; telescope                                      &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">INSTRUME</span>, <span class="string">&quot;&#39;Kepler Photometer&#39;  &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; detector type                                  &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OBJECT</span>, <span class="string">&quot;&#39;EPIC 200164267&#39;     &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; string version of target id                    &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KEPLERID</span>, <span class="string">&quot;           200164267 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; unique Kepler target identifier                &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CHANNEL</span>, <span class="string">&quot;                  68 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; CCD channel                                    &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">MODULE</span>, <span class="string">&quot;                  19 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; CCD module                                     &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OUTPUT</span>, <span class="string">&quot;                   4 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; CCD output                                     &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CAMPAIGN</span>, <span class="string">&quot;&#39;&#39; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; Observing campaign number                                        &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATA_REL</span>, <span class="string">&quot;&#39;&#39; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; data release version number                                      &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OBSMODE</span>, <span class="string">&quot;&#39;long cadence&#39;       &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; observing mode                                 &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">MISSION</span>, <span class="string">&quot;&#39;K2      &#39;           &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; Mission name                                   &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TTABLEID</span>, <span class="string">&quot;&#39;&#39; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; target table id                                                  &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RADESYS</span>, <span class="string">&quot;&#39;ICRS    &#39;           &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; reference frame of celestial coordinates       &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RA_OBJ</span>, <span class="string">&quot;&#39;&#39; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [deg] right ascension                                            &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DEC_OBJ</span>, <span class="string">&quot;&#39;&#39; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [deg] declination                                                &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EQUINOX</span>, <span class="string">&quot;              2000.0 &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; equinox of celestial coordinate system         &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMRA</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [arcsec/yr] RA proper motion                                       &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMDEC</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [arcsec/yr] Dec proper motion                                      &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PMTOTAL</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [arcsec/yr] total proper motion                                    &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">PARALLAX</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [arcsec] parallax                                                  &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GLON</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [deg] galactic longitude                                           &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GLAT</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [deg] galactic latitude                                            &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GMAG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] SDSS g band magnitude                                        &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RMAG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] SDSS r band magnitude                                        &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">IMAG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] SDSS i band magnitude                                        &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">ZMAG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] SDSS z band magnitude                                        &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">JMAG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] J band magnitude from 2MASS                                  &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">HMAG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] H band magnitude from 2MASS                                  &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KMAG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] K band magnitude from 2MASS                                  &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">KEPMAG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] Kepler magnitude (Kp)                                        &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GRCOLOR</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] (g-r) color, SDSS bands                                      &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">JKCOLOR</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] (J-K) color, 2MASS bands                                     &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">GKCOLOR</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] (g-K) color, SDSS g - 2MASS K                                &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TEFF</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [K] Effective temperature                                          &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">LOGG</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [cm/s2] log10 surface gravity                                      &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">FEH</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [log10([Fe/H])]  metallicity                                       &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">EBMINUSV</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] E(B-V) reddening                                             &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">AV</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [mag] A_v extinction                                               &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">RADIUS</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; [solar radii] stellar radius                                       &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">TMINDEX</span>, <span class="string">&quot; &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; unique 2MASS catalog ID                                            &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">CHECKSUM</span>, <span class="string">&quot;&#39;7k7A7h637h697h69&#39;   &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; HDU checksum updated 2017-03-08T02:47:56       &quot;</span>)),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">DATASUM</span>, <span class="string">&quot;&#39;0       &#39;           &quot;</span>,
+                               <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; data unit checksum updated 2017-03-08T02:47:56 &quot;</span>)),
         ))
     }
 
@@ -465,7 +593,13 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">keyword_record</span>(<span class="ident">data</span>);
 
         <span class="kw">match</span> <span class="ident">result</span> {
-            <span class="ident">IResult</span>::<span class="ident">Done</span>(_,<span class="ident">k</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">k</span>, <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">OBJECT</span>)),
+            <span class="ident">IResult</span>::<span class="ident">Done</span>(_,<span class="ident">k</span>) <span class="op">=&gt;</span> {
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">k</span>, <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(
+                    <span class="ident">Keyword</span>::<span class="ident">OBJECT</span>,
+                    <span class="string">&quot;&#39;EPIC 200164267&#39;     &quot;</span>,
+                    <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; string version of target id                    &quot;</span>)
+                ))
+            },
             <span class="ident">IResult</span>::<span class="ident">Error</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect an error&quot;</span>),
             <span class="ident">IResult</span>::<span class="ident">Incomplete</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect to be incomplete&quot;</span>)
         }
@@ -480,8 +614,8 @@
 
         <span class="kw">match</span> <span class="ident">result</span> {
             <span class="ident">IResult</span>::<span class="ident">Done</span>(_, (<span class="ident">value</span>, <span class="ident">comment</span>)) <span class="op">=&gt;</span> {
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">value</span>, <span class="kw-2">&amp;</span><span class="string">b&quot;&#39;EPIC 200164267&#39;     &quot;</span>[..]);
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">comment</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="kw-2">&amp;</span><span class="string">b&quot; string version of target id                    &quot;</span>[..]));
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">value</span>, <span class="string">&quot;&#39;EPIC 200164267&#39;     &quot;</span>);
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">comment</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">Some</span>(<span class="string">&quot; string version of target id                    &quot;</span>));
             },
             <span class="ident">IResult</span>::<span class="ident">Error</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect an error&quot;</span>),
             <span class="ident">IResult</span>::<span class="ident">Incomplete</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect to be incomplete&quot;</span>)
@@ -503,6 +637,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
     <span class="kw">fn</span> <span class="ident">end_record_should_parse_an_END_record</span>(){
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="string">&quot;END                                                                             &quot;</span>
             .<span class="ident">as_bytes</span>();
@@ -517,6 +652,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="attribute">#[<span class="ident">allow</span>(<span class="ident">non_snake_case</span>)]</span>
     <span class="kw">fn</span> <span class="ident">blank_record_should_parse_a_BLANK_record</span>(){
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="string">&quot;                                                                                &quot;</span>
             .<span class="ident">as_bytes</span>();
