@@ -38,7 +38,7 @@ pub struct KeywordRecord<'a> {
     /// The keyword of this record.
     keyword: Keyword,
     /// The value of this record.
-    value: &'a str,
+    value: Value<'a>,
     /// The comment of this record.
     comment: Option<&'a str>
 }
@@ -46,17 +46,18 @@ pub struct KeywordRecord<'a> {
 impl<'a> KeywordRecord<'a> {
     /// Create a `KeywordRecord` from a specific `Keyword`.
     pub fn new(keyword: Keyword, value: &'a str, comment: Option<&'a str>) -> KeywordRecord<'a> {
-        KeywordRecord { keyword: keyword, value: value, comment: comment }
+        KeywordRecord { keyword: keyword, value: Value::Raw(value), comment: comment }
     }
 }
 
 impl<'a> Display for KeywordRecord<'a> {
     fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
-        write!(f, "{:?}= {}/{}", self.keyword, self.value, self.comment.unwrap_or(""))
+        write!(f, "{:?}= {:?}/{}", self.keyword, self.value, self.comment.unwrap_or(""))
     }
 }
 
 /// The possible values of a KeywordRecord.
+#[derive(Debug, PartialEq)]
 pub enum Value<'a> {
     /// A string enclosed in single quotes `'`.
     CharacterString(&'a str),
@@ -243,7 +244,7 @@ mod tests {
     #[test]
     fn keyword_record_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
-            KeywordRecord { keyword: Keyword::ORIGIN, value: "", comment: Option::None },
+            KeywordRecord { keyword: Keyword::ORIGIN, value: Value::Raw(""), comment: Option::None },
             KeywordRecord::new(Keyword::ORIGIN, "", Option::None));
     }
 
