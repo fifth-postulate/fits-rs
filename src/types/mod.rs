@@ -1,6 +1,7 @@
 //! The types modules describes all the structures to express FITS files.
 
 use std::str::FromStr;
+use std::fmt::{Display, Formatter, Error};
 
 /// Representation of a FITS file.
 #[derive(Debug, PartialEq)]
@@ -46,6 +47,12 @@ impl<'a> KeywordRecord<'a> {
     /// Create a `KeywordRecord` from a specific `Keyword`.
     pub fn new(keyword: Keyword, value: &'a str, comment: Option<&'a str>) -> KeywordRecord<'a> {
         KeywordRecord { keyword: keyword, value: value, comment: comment }
+    }
+}
+
+impl<'a> Display for KeywordRecord<'a> {
+    fn fmt(&self, f: &mut Formatter) -> Result<(), Error> {
+        write!(f, "{:?}= {}/{}", self.keyword, self.value, self.comment.unwrap_or(""))
     }
 }
 

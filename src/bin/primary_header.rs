@@ -20,7 +20,7 @@ fn main() {
     match result {
         IResult::Done(_, trappist1) => {
             for record in trappist1.primary_header.keyword_records {
-                println!("{:?}", record);
+                println!("{}", record);
             }
         },
         _ => panic!("Whoops, something went wrong")
