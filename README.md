@@ -18,13 +18,30 @@ wget --output-document=fits-reference.pdf "https://www.aanda.org/articles/aa/pdf
 ```
 
 ### Reading Primary Header
-The headers of FITS files are in ASCII. This means they can be read. The
-following command will output the primary header for the FITS file in the
-repository.
+Even though the headers of FITS files are in ASCII, you can use this crate to
+read the primary header.
 
+```rust
+    let args: Vec<String> = env::args().collect();
+    let filename = &args[1];
+
+    let mut f = File::open(filename).expect("file not found");
+    let mut buffer: Vec<u8> = vec!();
+    let _ = f.read_to_end(&mut buffer);
+
+    let result = fits(&buffer);
+
+    match result {
+        IResult::Done(_, trappist1) => {
+            for record in trappist1.primary_header.keyword_records {
+                println!("{:?}", record);
+            }
+        },
+        _ => panic!("Whoops, something went wrong")
+    }
 ```
-head --bytes=5760 assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits | sed -e "s/.\{80\}/&\n/g"
-```
+
+You can find this binary in [`src/bin/primary_header.rs`](https://github.com/fifth-postulate/fits-rs/blob/master/src/bin/primary_header.rs).
 
 Unfortunately, some extensions are in binary.
 
