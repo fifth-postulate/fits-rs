@@ -45,8 +45,13 @@ pub struct KeywordRecord<'a> {
 
 impl<'a> KeywordRecord<'a> {
     /// Create a `KeywordRecord` from a specific `Keyword`.
-    pub fn new(keyword: Keyword, value: &'a str, comment: Option<&'a str>) -> KeywordRecord<'a> {
-        KeywordRecord { keyword: keyword, value: Value::Raw(value), comment: comment }
+    pub fn new(keyword: Keyword, value: Value<'a>, comment: Option<&'a str>) -> KeywordRecord<'a> {
+        KeywordRecord { keyword: keyword, value: value, comment: comment }
+    }
+
+    /// Convenient method that will wrap a `&str` into a `Value::Raw`.
+    pub fn convenient(keyword: Keyword, value: &'a str, comment: Option<&'a str>) -> KeywordRecord<'a> {
+        KeywordRecord::new(keyword, Value::Raw(value), comment)
     }
 }
 
@@ -231,12 +236,12 @@ mod tests {
     fn primary_header_constructed_from_the_new_function_shoul_eq_hand_construction() {
         assert_eq!(
             PrimaryHeader { keyword_records: vec!(
-                KeywordRecord::new(Keyword::SIMPLE, "T", Option::None),
-                KeywordRecord::new(Keyword::NEXTEND, "0", Option::Some("no extensions")),
+                KeywordRecord::new(Keyword::SIMPLE, Value::Raw("T"), Option::None),
+                KeywordRecord::new(Keyword::NEXTEND, Value::Raw("0"), Option::Some("no extensions")),
             )},
             PrimaryHeader::new(vec!(
-                KeywordRecord::new(Keyword::SIMPLE, "T", Option::None),
-                KeywordRecord::new(Keyword::NEXTEND, "0", Option::Some("no extensions")),
+                KeywordRecord::new(Keyword::SIMPLE, Value::Raw("T"), Option::None),
+                KeywordRecord::new(Keyword::NEXTEND, Value::Raw("0"), Option::Some("no extensions")),
             ))
         );
     }
@@ -245,7 +250,7 @@ mod tests {
     fn keyword_record_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
             KeywordRecord { keyword: Keyword::ORIGIN, value: Value::Raw(""), comment: Option::None },
-            KeywordRecord::new(Keyword::ORIGIN, "", Option::None));
+            KeywordRecord::new(Keyword::ORIGIN, Value::Raw(""), Option::None));
     }
 
     #[test]
