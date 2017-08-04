@@ -253,7 +253,7 @@ mod tests {
     }
 
     fn convenient<'a>(keyword: Keyword, value: &'a str, comment: Option<&'a str>) -> KeywordRecord<'a> {
-        KeywordRecord::convenient(keyword, value, comment)
+        KeywordRecord::new(keyword, Value::Raw(value), comment)
     }
 
     #[test]

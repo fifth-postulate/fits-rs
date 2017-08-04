@@ -48,11 +48,6 @@ impl<'a> KeywordRecord<'a> {
     pub fn new(keyword: Keyword, value: Value<'a>, comment: Option<&'a str>) -> KeywordRecord<'a> {
         KeywordRecord { keyword: keyword, value: value, comment: comment }
     }
-
-    /// Convenient method that will wrap a `&str` into a `Value::Raw`.
-    pub fn convenient(keyword: Keyword, value: &'a str, comment: Option<&'a str>) -> KeywordRecord<'a> {
-        KeywordRecord::new(keyword, Value::Raw(value), comment)
-    }
 }
 
 impl<'a> Display for KeywordRecord<'a> {
