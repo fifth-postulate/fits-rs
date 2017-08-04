@@ -53,11 +53,11 @@ named!(value<&[u8], &str>,
 named!(character_string<&[u8], Value>,
        map!(
            map_res!(
-               delimited!(
+               ws!(delimited!(
                    tag!("'"),
                    take_while!(is_allowed_in_character_string),
                    tag!("'")
-               ),
+               )),
                str::from_utf8
            ),
            Value::CharacterString
@@ -288,7 +288,7 @@ mod tests {
 
     #[test]
     fn character_string_should_parse_an_quote_delimited_string(){
-        let data = "'EPIC 200164267'"
+        let data = "   'EPIC 200164267'   "
             .as_bytes();
 
         let result = character_string(data);
