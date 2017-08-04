@@ -55,7 +55,7 @@ named!(character_string<&[u8], Value>,
            map_res!(
                delimited!(
                    tag!("'"),
-                   take_while!(is_character_string_character),
+                   take_while!(is_allowed_in_character_string),
                    tag!("'")
                ),
                str::from_utf8
@@ -63,7 +63,7 @@ named!(character_string<&[u8], Value>,
            Value::CharacterString
        ));
 
-fn is_character_string_character(chr: u8) -> bool {
+fn is_allowed_in_character_string(chr: u8) -> bool {
     is_restricted_ascii(chr) && chr != 39
 }
 
