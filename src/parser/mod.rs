@@ -74,15 +74,11 @@ named!(comment<&[u8], &str>,
        map_res!(
            do_parse!(
                tag!("/") >>
-                   comment: take_while!(is_comment_character) >>
+                   comment: take_while!(is_restricted_ascii) >>
                    (comment)
            ),
            str::from_utf8
        ));
-
-fn is_comment_character(chr: u8) -> bool {
-    is_restricted_ascii(chr)
-}
 
 fn is_restricted_ascii(chr: u8) -> bool {
     32u8 <= chr && chr <= 126u8
