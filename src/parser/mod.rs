@@ -70,6 +70,29 @@ fn is_allowed_in_character_string(chr: u8) -> bool {
     is_restricted_ascii(chr) && chr != 39
 }
 
+named!(logical_constant<&[u8], Value>,
+       map_res!(
+           map_res!(
+               ws!(alt!(tag!("T") | tag!("F"))),
+               str::from_utf8
+           ),
+           logical_constant_from_str
+       ));
+
+/// Problems that could occur when parsing a `str` for a Value::Logical are enumerated here.
+pub enum ParseLogicalConstantError {
+    /// When encountering anything other than `"T"` or `"F"`.
+    UnknownConstant
+}
+
+fn logical_constant_from_str(constant: &str) -> Result<Value, ParseLogicalConstantError> {
+    match constant {
+        "T" => Ok(Value::Logical(true)),
+        "F" => Ok(Value::Logical(false)),
+        _ => Err(ParseLogicalConstantError::UnknownConstant)
+    }
+}
+
 named!(comment<&[u8], &str>,
        map_res!(
            do_parse!(
@@ -103,7 +126,7 @@ named!(blank_record<&[u8], BlankRecord>,
 mod tests {
     use nom::{IResult};
     use super::super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, Value, BlankRecord};
-    use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, end_record, blank_record};
+    use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, logical_constant, end_record, blank_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -302,6 +325,24 @@ mod tests {
             },
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+
+    #[test]
+    fn logical_constant_should_parse_an_uppercase_T_or_F(){
+        for (constant, boolean) in vec!(("T", true), ("F", false)) {
+            let data = constant.as_bytes();
+
+            let result = logical_constant(data);
+
+            match result {
+                IResult::Done(_, value) => {
+                    assert_eq!(value, Value::Logical(boolean));
+                },
+                IResult::Error(_) => panic!("Did not expect an error"),
+                IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+            }
         }
     }
 

@@ -140,7 +140,7 @@ pub enum Keyword {
     END,
 }
 
-/// Problems that could occur when parsing a `str` are enumerated here.
+/// Problems that could occur when parsing a `str` for a Keyword are enumerated here.
 #[derive(Debug)]
 pub enum ParseKeywordError {
     /// When a str can not be recognized as a keyword, this error will be returned
