@@ -2,7 +2,7 @@
 
 use std::str;
 use std::str::FromStr;
-use super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
+use super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, Value, BlankRecord};
 
 named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub fits<&[u8], Fits>,
        do_parse!(
@@ -50,6 +50,23 @@ named!(value<&[u8], &str>,
        )
 );
 
+named!(character_string<&[u8], Value>,
+       map!(
+           map_res!(
+               delimited!(
+                   tag!("'"),
+                   take_while!(is_character_string_character),
+                   tag!("'")
+               ),
+               str::from_utf8
+           ),
+           Value::CharacterString
+       ));
+
+fn is_character_string_character(chr: u8) -> bool {
+    is_restricted_ascii(chr) && chr != 39
+}
+
 named!(comment<&[u8], &str>,
        map_res!(
            do_parse!(
@@ -61,6 +78,10 @@ named!(comment<&[u8], &str>,
        ));
 
 fn is_comment_character(chr: u8) -> bool {
+    is_restricted_ascii(chr)
+}
+
+fn is_restricted_ascii(chr: u8) -> bool {
     32u8 <= chr && chr <= 126u8
 }
 
@@ -82,8 +103,8 @@ named!(blank_record<&[u8], BlankRecord>,
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, BlankRecord};
-    use super::{fits, primary_header, keyword_record, keyword, valuecomment, end_record, blank_record};
+    use super::super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, Value, BlankRecord};
+    use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, end_record, blank_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -259,6 +280,22 @@ mod tests {
             IResult::Done(_, (value, comment)) => {
                 assert_eq!(value, "'EPIC 200164267'     ");
                 assert_eq!(comment, Option::Some(" string version of target id                    "));
+            },
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn character_string_should_parse_an_quote_delimited_string(){
+        let data = "'EPIC 200164267'"
+            .as_bytes();
+
+        let result = character_string(data);
+
+        match result {
+            IResult::Done(_, value) => {
+                assert_eq!(value, Value::CharacterString("EPIC 200164267"));
             },
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
