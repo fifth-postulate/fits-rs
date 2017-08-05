@@ -6,10 +6,8 @@ use std::fmt::{Display, Formatter, Error};
 /// Representation of a FITS file.
 #[derive(Debug, PartialEq)]
 pub struct Fits<'a> {
-    /// The primary header
-    pub primary_header: Header<'a>,
-    /// The optional primary data array
-    pub primary_data_array: Option<DataArray>
+    /// The primary HDU
+    pub primary_hdu: HDU<'a>,
 }
 
 /// Header Data Unit, combination of a header and an optional DataArray
@@ -19,8 +17,7 @@ impl<'a> Fits<'a> {
     /// Create a Fits structure with a given primary header
     pub fn new(primary_header: Header<'a>) -> Fits<'a> {
         Fits {
-            primary_header: primary_header,
-            primary_data_array: Option::None,
+            primary_hdu: (primary_header, Option::None),
         }
     }
 }
@@ -235,8 +232,7 @@ mod tests {
     fn fits_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
             Fits {
-                primary_header: Header::new(vec!()),
-                primary_data_array: Option::None,
+                primary_hdu: (Header::new(vec!()), Option::None),
             },
             Fits::new(Header::new(vec!()))
         );

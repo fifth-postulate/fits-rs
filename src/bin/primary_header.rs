@@ -19,7 +19,7 @@ fn main() {
 
     match result {
         IResult::Done(_, trappist1) => {
-            for record in trappist1.primary_header.keyword_records {
+            for record in trappist1.primary_hdu.0.keyword_records {
                 println!("{}", record);
             }
         },
