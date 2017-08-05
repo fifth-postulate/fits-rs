@@ -91,13 +91,54 @@ named!(integer<&[u8], Value>,
        map!(
            map_res!(
                map_res!(
-                   ws!(take_while!(is_digit)), // TODO negative numbers, trailing zeroes
+                   ws!(take_while!(is_digit)), // TODO negative numbers, prefix zeroes
                    str::from_utf8
                ),
                i64::from_str
            ),
            Value::Integer
        ));
+
+named!(real<&[u8], Value>,
+       map!(
+           map_res!(
+               ws!(tuple!(take_while!(is_digit), tag!("."), take_while!(is_digit))),
+               tuple_to_f64
+           ),
+           Value::Real
+       ));
+
+/// Reasons for converting to a f64 from a parse triple (left, _, right) to fail.
+pub enum RealParseError {
+    /// When left is not parse-able as `str`.
+    IntegerPartUnparseable,
+    /// When right is not parse-able as `str`.
+    FractionalPartUnparseable,
+    /// When the combination is not a `f64`.
+    NotARealNumber,
+}
+
+fn tuple_to_f64((left, _, right): (&[u8], &[u8], &[u8])) -> Result<f64, RealParseError> {
+    match str::from_utf8(left) {
+        Ok(integer_part) => {
+            match str::from_utf8(right) {
+                Ok(fractional_part) => {
+                    let mut number = String::from("");
+                    number.push_str(integer_part);
+                    number.push_str(".");
+                    number.push_str(fractional_part);
+
+                    match f64::from_str(&number) {
+                        Ok(result) => Ok(result),
+                        Err(_) => Err(RealParseError::NotARealNumber)
+                    }
+                }
+                Err(_) => Err(RealParseError::FractionalPartUnparseable)
+            }
+        }
+        Err(_) => Err(RealParseError::IntegerPartUnparseable)
+    }
+}
 
 named!(undefined<&[u8], Value>,
        map!(
@@ -138,7 +179,7 @@ named!(blank_record<&[u8], BlankRecord>,
 mod tests {
     use nom::{IResult};
     use super::super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, Value, BlankRecord};
-    use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, logical_constant, integer, undefined, end_record, blank_record};
+    use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, logical_constant, real, integer, undefined, end_record, blank_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -402,6 +443,21 @@ mod tests {
 
             match result {
                 IResult::Done(_, value) => assert_eq!(value, Value::Logical(boolean)),
+                IResult::Error(_) => panic!("Did not expect an error"),
+                IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+            }
+        }
+    }
+
+    #[test]
+    fn real_should_parse_an_floating_point_number() {
+        for (input, f) in vec!(("1.0", 1f64), ("37.0", 37f64), ("51.0", 51f64)) {
+            let data = input.as_bytes();
+
+            let result = real(data);
+
+            match result {
+                IResult::Done(_, value) => assert_eq!(value, Value::Real(f)),
                 IResult::Error(_) => panic!("Did not expect an error"),
                 IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
             }
