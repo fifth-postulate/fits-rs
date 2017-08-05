@@ -10,15 +10,28 @@ pub struct Fits<'a> {
     pub primary_hdu: HDU<'a>,
 }
 
-/// Header Data Unit, combination of a header and an optional DataArray
-pub type HDU<'a> = (Header<'a>, Option<DataArray>);
-
 impl<'a> Fits<'a> {
     /// Create a Fits structure with a given primary header
     pub fn new(primary_header: Header<'a>) -> Fits<'a> {
         Fits {
-            primary_hdu: (primary_header, Option::None),
+            primary_hdu: HDU::new(primary_header),
         }
+    }
+}
+
+/// Header Data Unit, combination of a header and an optional data array.
+#[derive(Debug, PartialEq)]
+pub struct HDU<'a> {
+    /// The header of this HDU.
+    pub header: Header<'a>,
+    /// The optional data array of this HDU.
+    data_array: Option<DataArray>,
+}
+
+impl<'a> HDU<'a> {
+    /// Create an HDU with a header, setting the data_array to none.
+    pub fn new(header: Header<'a>) -> HDU<'a> {
+        HDU { header: header, data_array: Option::None }
     }
 }
 
@@ -232,14 +245,14 @@ mod tests {
     fn fits_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
             Fits {
-                primary_hdu: (Header::new(vec!()), Option::None),
+                primary_hdu: HDU::new(Header::new(vec!())),
             },
             Fits::new(Header::new(vec!()))
         );
     }
 
     #[test]
-    fn primary_header_constructed_from_the_new_function_shoul_eq_hand_construction() {
+    fn header_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
             Header { keyword_records: vec!(
                 KeywordRecord::new(Keyword::SIMPLE, Value::Logical(true), Option::None),
