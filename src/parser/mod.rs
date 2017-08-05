@@ -3,7 +3,7 @@
 use std::str;
 use std::str::FromStr;
 use nom::{is_space, is_digit};
-use super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, Value, BlankRecord};
+use super::types::{Fits, Header, KeywordRecord, Keyword, Value, BlankRecord};
 
 named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub fits<&[u8], Fits>,
        do_parse!(
@@ -12,12 +12,12 @@ named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub 
                (Fits::new(ph))
        ));
 
-named!(primary_header<&[u8], PrimaryHeader>,
+named!(primary_header<&[u8], Header>,
        do_parse!(
            records: many0!(keyword_record) >>
                end_record >>
                many0!(blank_record) >>
-               (PrimaryHeader::new(records))
+               (Header::new(records))
        ));
 
 named!(keyword_record<&[u8], KeywordRecord>,
@@ -178,7 +178,7 @@ named!(blank_record<&[u8], BlankRecord>,
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, Value, BlankRecord};
+    use super::super::types::{Fits, Header, KeywordRecord, Keyword, Value, BlankRecord};
     use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, logical_constant, real, integer, undefined, end_record, blank_record};
 
     #[test]
@@ -209,8 +209,8 @@ mod tests {
         }
     }
 
-    fn long_cadence_header<'a>() -> PrimaryHeader<'a> {
-        PrimaryHeader::new(vec!(
+    fn long_cadence_header<'a>() -> Header<'a> {
+        Header::new(vec!(
             KeywordRecord::new(Keyword::SIMPLE,
                                Value::Logical(true),
                                Option::Some("conforms to FITS standards")),

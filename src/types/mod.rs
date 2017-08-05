@@ -7,14 +7,17 @@ use std::fmt::{Display, Formatter, Error};
 #[derive(Debug, PartialEq)]
 pub struct Fits<'a> {
     /// The primary header
-    pub primary_header: PrimaryHeader<'a>,
+    pub primary_header: Header<'a>,
     /// The optional primary data array
     pub primary_data_array: Option<DataArray>
 }
 
+/// Header Data Unit, combination of a header and an optional DataArray
+pub type HDU<'a> = (Header<'a>, Option<DataArray>);
+
 impl<'a> Fits<'a> {
     /// Create a Fits structure with a given primary header
-    pub fn new(primary_header: PrimaryHeader<'a>) -> Fits<'a> {
+    pub fn new(primary_header: Header<'a>) -> Fits<'a> {
         Fits {
             primary_header: primary_header,
             primary_data_array: Option::None,
@@ -24,15 +27,15 @@ impl<'a> Fits<'a> {
 
 /// The primary header of a FITS file.
 #[derive(Debug, PartialEq)]
-pub struct PrimaryHeader<'a> {
+pub struct Header<'a> {
     /// The keyword records of the primary header.
     pub keyword_records: Vec<KeywordRecord<'a>>,
 }
 
-impl<'a> PrimaryHeader<'a> {
-    /// Create a PrimaryHeader with a given set of keyword_records
-    pub fn new(keyword_records: Vec<KeywordRecord<'a>>) -> PrimaryHeader<'a> {
-        PrimaryHeader { keyword_records: keyword_records }
+impl<'a> Header<'a> {
+    /// Create a Header with a given set of keyword_records
+    pub fn new(keyword_records: Vec<KeywordRecord<'a>>) -> Header<'a> {
+        Header { keyword_records: keyword_records }
     }
 }
 
@@ -232,21 +235,21 @@ mod tests {
     fn fits_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
             Fits {
-                primary_header: PrimaryHeader::new(vec!()),
+                primary_header: Header::new(vec!()),
                 primary_data_array: Option::None,
             },
-            Fits::new(PrimaryHeader::new(vec!()))
+            Fits::new(Header::new(vec!()))
         );
     }
 
     #[test]
     fn primary_header_constructed_from_the_new_function_shoul_eq_hand_construction() {
         assert_eq!(
-            PrimaryHeader { keyword_records: vec!(
+            Header { keyword_records: vec!(
                 KeywordRecord::new(Keyword::SIMPLE, Value::Logical(true), Option::None),
                 KeywordRecord::new(Keyword::NEXTEND, Value::Integer(0i64), Option::Some("no extensions")),
             )},
-            PrimaryHeader::new(vec!(
+            Header::new(vec!(
                 KeywordRecord::new(Keyword::SIMPLE, Value::Logical(true), Option::None),
                 KeywordRecord::new(Keyword::NEXTEND, Value::Integer(0i64), Option::Some("no extensions")),
             ))
