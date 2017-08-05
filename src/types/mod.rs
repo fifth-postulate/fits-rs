@@ -67,8 +67,10 @@ pub enum Value<'a> {
     Integer(i64),
     /// Fixed format real floating point number.
     Real(f64),
-    /// Complex number represented by a real an imaginary component.
+    /// Complex number represented by a real and imaginary component.
     Complex((f64, f64)),
+    /// When a value is not present
+    Undefined,
     /// Not yet correctly parsed value // TODO Remove this value as soon as possible.
     Raw(&'a str),
 }
