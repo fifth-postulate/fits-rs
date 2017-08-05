@@ -385,7 +385,7 @@ mod tests {
     #[allow(non_snake_case)]
     #[test]
     fn logical_constant_should_parse_an_uppercase_T_or_F(){
-        for (constant, boolean) in vec!(("T", true), ("F", false)) {
+        for (constant, boolean) in vec!(("T", true), ("F", false), ("   T ", true)) {
             let data = constant.as_bytes();
 
             let result = logical_constant(data);
