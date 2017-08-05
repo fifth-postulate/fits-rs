@@ -45,7 +45,7 @@ named!(valuecomment<&[u8], (Value, Option<&str>)>,
            )));
 
 named!(value<&[u8], Value>,
-       alt!(character_string | logical_constant | integer | undefined));
+       alt!(character_string | logical_constant | real | integer | undefined));
 
 named!(character_string<&[u8], Value>,
        map!(
@@ -296,8 +296,8 @@ mod tests {
                                Value::CharacterString(""),
                                Option::Some(" [deg] declination                                                ")),
             KeywordRecord::new(Keyword::EQUINOX,
-                               Value::Integer(2000i64), // TODO should be Real(2000.0f64)
-                               Option::None), //Some(" equinox of celestial coordinate system         ")),
+                               Value::Real(2000.0f64),
+                               Option::Some(" equinox of celestial coordinate system         ")),
             KeywordRecord::new(Keyword::PMRA,
                                Value::Undefined,
                                Option::Some(" [arcsec/yr] RA proper motion                                       ")),
