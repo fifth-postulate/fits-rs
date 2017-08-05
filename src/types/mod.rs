@@ -7,13 +7,18 @@ use std::fmt::{Display, Formatter, Error};
 #[derive(Debug, PartialEq)]
 pub struct Fits<'a> {
     /// The primary header
-    pub primary_header: PrimaryHeader<'a>
+    pub primary_header: PrimaryHeader<'a>,
+    /// The optional primary data array
+    pub primary_data_array: Option<DataArray>
 }
 
 impl<'a> Fits<'a> {
     /// Create a Fits structure with a given primary header
     pub fn new(primary_header: PrimaryHeader<'a>) -> Fits<'a> {
-        Fits { primary_header: primary_header }
+        Fits {
+            primary_header: primary_header,
+            primary_data_array: Option::None,
+        }
     }
 }
 
@@ -30,6 +35,10 @@ impl<'a> PrimaryHeader<'a> {
         PrimaryHeader { keyword_records: keyword_records }
     }
 }
+
+/// Placeholder for DataArray
+#[derive(Debug, PartialEq)]
+pub struct DataArray;
 
 /// A keyword record contains information about a FITS header. It consists of a
 /// keyword, the corresponding value and an optional comment.
@@ -222,7 +231,10 @@ mod tests {
     #[test]
     fn fits_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
-            Fits { primary_header: PrimaryHeader::new(vec!()) },
+            Fits {
+                primary_header: PrimaryHeader::new(vec!()),
+                primary_data_array: Option::None,
+            },
             Fits::new(PrimaryHeader::new(vec!()))
         );
     }
