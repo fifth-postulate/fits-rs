@@ -45,16 +45,7 @@ named!(valuecomment<&[u8], (Value, Option<&str>)>,
            )));
 
 named!(value<&[u8], Value>,
-       alt!(character_string | logical_constant | integer | undefined | raw));
-
-named!(raw<&[u8], Value>,
-       map!(
-           map_res!(
-               is_not!("/"), // TODO Differentiate on the possible value types
-               str::from_utf8
-           ),
-           Value::Raw
-       ));
+       alt!(character_string | logical_constant | integer | undefined));
 
 named!(character_string<&[u8], Value>,
        map!(

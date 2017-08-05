@@ -71,8 +71,6 @@ pub enum Value<'a> {
     Complex((f64, f64)),
     /// When a value is not present
     Undefined,
-    /// Not yet correctly parsed value // TODO Remove this value as soon as possible.
-    Raw(&'a str),
 }
 
 /// A unit struct that will act as a placeholder for blank records.
@@ -233,12 +231,12 @@ mod tests {
     fn primary_header_constructed_from_the_new_function_shoul_eq_hand_construction() {
         assert_eq!(
             PrimaryHeader { keyword_records: vec!(
-                KeywordRecord::new(Keyword::SIMPLE, Value::Raw("T"), Option::None),
-                KeywordRecord::new(Keyword::NEXTEND, Value::Raw("0"), Option::Some("no extensions")),
+                KeywordRecord::new(Keyword::SIMPLE, Value::Logical(true), Option::None),
+                KeywordRecord::new(Keyword::NEXTEND, Value::Integer(0i64), Option::Some("no extensions")),
             )},
             PrimaryHeader::new(vec!(
-                KeywordRecord::new(Keyword::SIMPLE, Value::Raw("T"), Option::None),
-                KeywordRecord::new(Keyword::NEXTEND, Value::Raw("0"), Option::Some("no extensions")),
+                KeywordRecord::new(Keyword::SIMPLE, Value::Logical(true), Option::None),
+                KeywordRecord::new(Keyword::NEXTEND, Value::Integer(0i64), Option::Some("no extensions")),
             ))
         );
     }
@@ -246,8 +244,8 @@ mod tests {
     #[test]
     fn keyword_record_constructed_from_the_new_function_should_eq_hand_construction() {
         assert_eq!(
-            KeywordRecord { keyword: Keyword::ORIGIN, value: Value::Raw(""), comment: Option::None },
-            KeywordRecord::new(Keyword::ORIGIN, Value::Raw(""), Option::None));
+            KeywordRecord { keyword: Keyword::ORIGIN, value: Value::Undefined, comment: Option::None },
+            KeywordRecord::new(Keyword::ORIGIN, Value::Undefined, Option::None));
     }
 
     #[test]
