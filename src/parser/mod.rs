@@ -2,7 +2,7 @@
 
 use std::str;
 use std::str::FromStr;
-use nom::{is_space};
+use nom::{is_space, is_digit};
 use super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, Value, BlankRecord};
 
 named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub fits<&[u8], Fits>,
@@ -96,6 +96,18 @@ fn logical_constant_from_str(constant: &str) -> Result<Value, ParseLogicalConsta
     }
 }
 
+named!(integer<&[u8], Value>,
+       map!(
+           map_res!(
+               map_res!(
+                   ws!(take_while!(is_digit)), // TODO negative numbers, trailing zeroes
+                   str::from_utf8
+               ),
+               i64::from_str
+           ),
+           Value::Integer
+       ));
+
 named!(undefined<&[u8], Value>,
        map!(
            take_while!(is_space),
@@ -135,7 +147,7 @@ named!(blank_record<&[u8], BlankRecord>,
 mod tests {
     use nom::{IResult};
     use super::super::types::{Fits, PrimaryHeader, KeywordRecord, Keyword, Value, BlankRecord};
-    use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, logical_constant, undefined, end_record, blank_record};
+    use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, logical_constant, integer, undefined, end_record, blank_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -399,6 +411,21 @@ mod tests {
 
             match result {
                 IResult::Done(_, value) => assert_eq!(value, Value::Logical(boolean)),
+                IResult::Error(_) => panic!("Did not expect an error"),
+                IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+            }
+        }
+    }
+
+    #[test]
+    fn integer_should_parse_an_integer() {
+        for (input, n) in vec!(("1", 1i64), ("37", 37i64), ("51", 51i64)) {
+            let data = input.as_bytes();
+
+            let result = integer(data);
+
+            match result {
+                IResult::Done(_, value) => assert_eq!(value, Value::Integer(n)),
                 IResult::Error(_) => panic!("Did not expect an error"),
                 IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
             }
