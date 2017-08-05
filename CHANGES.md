@@ -1,10 +1,12 @@
 ## 0.3.0
 ### Changes
-* Started a [wiki](https://github.com/fifth-postulate/fits-rs/wiki)
+* Started a [wiki](https://github.com/fifth-postulate/fits-rs/wiki).
+* Parse `KeywordRecord` values into actual `Value`s.
+* Introduce `HDU`, a _Header Data Unit_.
 
 ## 0.2.0
 ### Changes
-* Parse primary header
+* Parse primary header.
 
 ## 0.1.0
 * Initial version.
