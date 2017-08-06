@@ -47,6 +47,36 @@ impl<'a> Header<'a> {
     pub fn new(keyword_records: Vec<KeywordRecord<'a>>) -> Header<'a> {
         Header { keyword_records: keyword_records }
     }
+
+    /// Determines the size of the data array following this header.
+    pub fn data_array_size(&self) -> u64 {
+        if self.is_primary() {
+            self.primary_data_array_size()
+        } else {
+            self.extention_data_array_size()
+        }
+    }
+
+    fn is_primary(&self) -> bool {
+        self.has_keyword_record(Keyword::SIMPLE)
+    }
+
+    fn has_keyword_record(&self, keyword: Keyword) -> bool {
+        for keyword_record in &self.keyword_records {
+            if keyword == keyword_record.keyword {
+                return true
+            }
+        }
+        false
+    }
+
+    fn primary_data_array_size(&self) -> u64 { // TODO correctly implement
+        0u64
+    }
+
+    fn extention_data_array_size(&self) -> u64 { // TODO correctly implement
+        064
+    }
 }
 
 /// Placeholder for DataArray
