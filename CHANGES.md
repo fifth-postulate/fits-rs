@@ -3,6 +3,7 @@
 * Started a [wiki](https://github.com/fifth-postulate/fits-rs/wiki).
 * Parse `KeywordRecord` values into actual `Value`s.
 * Introduce `HDU`, a _Header Data Unit_.
+* Parse `NAXISn` keyword correctly.
 
 ## 0.2.0
 ### Changes
