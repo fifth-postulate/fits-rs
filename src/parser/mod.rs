@@ -7,12 +7,12 @@ use super::types::{Fits, Header, KeywordRecord, Keyword, Value, BlankRecord};
 
 named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub fits<&[u8], Fits>,
        do_parse!(
-           ph: primary_header >>
+           ph: header >>
                many0!(take!(2880)) >>
                (Fits::new(ph))
        ));
 
-named!(primary_header<&[u8], Header>,
+named!(header<&[u8], Header>,
        do_parse!(
            records: many0!(keyword_record) >>
                end_record >>
@@ -179,7 +179,7 @@ named!(blank_record<&[u8], BlankRecord>,
 mod tests {
     use nom::{IResult};
     use super::super::types::{Fits, Header, KeywordRecord, Keyword, Value, BlankRecord};
-    use super::{fits, primary_header, keyword_record, keyword, valuecomment, character_string, logical_constant, real, integer, undefined, end_record, blank_record};
+    use super::{fits, header, keyword_record, keyword, valuecomment, character_string, logical_constant, real, integer, undefined, end_record, blank_record};
 
     #[test]
     fn it_should_parse_a_fits_file(){
@@ -197,10 +197,10 @@ mod tests {
     }
 
     #[test]
-    fn primary_header_should_parse_a_primary_header(){
+    fn header_should_parse_a_primary_header(){
         let data = include_bytes!("../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits");
 
-        let result = primary_header(&data[0..(2*2880)]);
+        let result = header(&data[0..(2*2880)]);
 
         match result {
             IResult::Done(_, h) => assert_eq!(h, long_cadence_header()),
