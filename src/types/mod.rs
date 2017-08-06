@@ -58,25 +58,71 @@ impl<'a> Header<'a> {
     }
 
     fn is_primary(&self) -> bool {
-        self.has_keyword_record(Keyword::SIMPLE)
+        self.has_keyword_record(&Keyword::SIMPLE)
     }
 
-    fn has_keyword_record(&self, keyword: Keyword) -> bool {
+    fn has_keyword_record(&self, keyword: &Keyword) -> bool {
         for keyword_record in &self.keyword_records {
-            if keyword == keyword_record.keyword {
+            if *keyword == keyword_record.keyword {
                 return true
             }
         }
         false
     }
 
-    fn primary_data_array_size(&self) -> u64 { // TODO correctly implement
-        0u64
+    fn primary_data_array_size(&self) -> u64 {
+        (self.integer_value_of(&Keyword::BITPIX).unwrap_or(0i64).abs() * self.naxis_product()) as u64
     }
 
     fn extention_data_array_size(&self) -> u64 { // TODO correctly implement
-        064
+        0u64
     }
+
+    fn integer_value_of(&self, keyword: &Keyword) -> Result<i64, ValueRetrievalError> {
+        self.value_of(keyword).and_then(|value| {
+            match value {
+                Value::Integer(n) => Ok(n),
+                _ => Err(ValueRetrievalError::NotAnInteger),
+            }
+        })
+    }
+
+    fn value_of(&self, keyword: &Keyword) -> Result<Value, ValueRetrievalError> {
+        if self.has_keyword_record(&keyword) {
+            for keyword_record in &self.keyword_records {
+                if keyword_record.keyword == *keyword {
+                    return Ok(keyword_record.value.clone())
+                }
+            }
+        }
+        Err(ValueRetrievalError::KeywordNotPresent)
+    }
+
+    fn naxis_product(&self) -> i64 {
+        let limit = self.integer_value_of(&Keyword::NAXIS).unwrap_or(0i64);
+        if limit > 0 {
+            let mut product = 1i64;
+            for n in 0..limit {
+                let naxisn = Keyword::NAXISn((n + 1i64) as u16);
+                product *= self.integer_value_of(&naxisn)
+                    .expect(format!("NAXIS{} should be defined", n).as_str());
+            }
+            product
+        } else {
+            0i64
+        }
+    }
+}
+
+/// When asking for a value, these things can go wrong.
+#[derive(Debug)]
+pub enum ValueRetrievalError {
+    /// The value associated with this keyword is not an integer.
+    NotAnInteger,
+    /// There is no value associated with this keyword.
+    ValueUndefined,
+    /// The keyword is not present in the header.
+    KeywordNotPresent,
 }
 
 /// Placeholder for DataArray
@@ -109,7 +155,7 @@ impl<'a> Display for KeywordRecord<'a> {
 }
 
 /// The possible values of a KeywordRecord.
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone)]
 pub enum Value<'a> {
     /// A string enclosed in single quotes `'`.
     CharacterString(&'a str),
@@ -392,5 +438,19 @@ mod tests {
     #[test]
     fn should_also_parse_whitespace_keywords() {
         assert_eq!(Keyword::from_str("SIMPLE  ").unwrap(), Keyword::SIMPLE);
+    }
+
+    #[test]
+    fn primary_header_should_determine_correct_size_primary_data_array() {
+        let header = Header::new(vec!(
+            KeywordRecord::new(Keyword::SIMPLE, Value::Logical(true), Option::None),
+            KeywordRecord::new(Keyword::BITPIX, Value::Integer(8i64), Option::None),
+            KeywordRecord::new(Keyword::NAXIS, Value::Integer(2i64), Option::None),
+            KeywordRecord::new(Keyword::NAXISn(1u16), Value::Integer(3i64), Option::None),
+            KeywordRecord::new(Keyword::NAXISn(2u16), Value::Integer(5i64), Option::None),
+            KeywordRecord::new(Keyword::END, Value::Undefined, Option::None),
+        ));
+
+        assert_eq!(header.data_array_size(), 8*3*5);
     }
 }

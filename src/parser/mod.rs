@@ -544,4 +544,17 @@ mod tests {
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
     }
+
+    #[test]
+    fn header_should_have_a_data_array_size_of_0(){
+        let data = include_bytes!("../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits");
+
+        let result = header(&data[0..(2*2880)]);
+
+        match result {
+            IResult::Done(_, h) => assert_eq!(h.data_array_size(), 0u64),
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
 }
