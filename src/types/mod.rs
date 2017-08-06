@@ -106,7 +106,7 @@ pub enum Keyword {
     SIMPLE,
     BITPIX,
     NAXIS,
-    NAXISn(u8),
+    NAXISn(u16),
     EXTEND,
     NEXTEND,
     EXTNAME,
@@ -165,15 +165,16 @@ pub enum Keyword {
 /// Problems that could occur when parsing a `str` for a Keyword are enumerated here.
 #[derive(Debug)]
 pub enum ParseKeywordError {
-    /// When a str can not be recognized as a keyword, this error will be returned
-    UnknownKeyword
+    /// When a str can not be recognized as a keyword, this error will be returned.
+    UnknownKeyword,
+    /// When `NAXIS<number>` where `<number>` is not an actual number.
+    NotAnNaxisNumber,
 }
 
 impl FromStr for Keyword {
     type Err = ParseKeywordError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
-        // TODO parse NAXIS1 correctly
         match s.trim_right() {
             "SIMPLE" => Ok(Keyword::SIMPLE),
             "BITPIX" => Ok(Keyword::BITPIX),
@@ -231,7 +232,17 @@ impl FromStr for Keyword {
             "CHECKSUM" => Ok(Keyword::CHECKSUM),
             "DATASUM" => Ok(Keyword::DATASUM),
             "END" => Ok(Keyword::END),
-            _ => Err(ParseKeywordError::UnknownKeyword)
+            input @ _ => {
+                if input.starts_with("NAXIS") {
+                    let (_, representation) = input.split_at(5);
+                    match u16::from_str(representation) {
+                        Ok(n) => Ok(Keyword::NAXISn(n)),
+                        Err(_) => Err(ParseKeywordError::NotAnNaxisNumber)
+                    }
+                } else {
+                    Err(ParseKeywordError::UnknownKeyword)
+                }
+            }
         }
     }
 }
@@ -334,6 +345,17 @@ mod tests {
 
         for (input, expected) in data {
             assert_eq!(Keyword::from_str(input).unwrap(), expected);
+        }
+    }
+
+    #[allow(non_snake_case)]
+    #[test]
+    fn NAXISn_should_be_parsed_from_str() {
+        for n in 1u16..1000u16 {
+            let keyword = Keyword::NAXISn(n);
+            let representation = format!("NAXIS{}", n);
+
+            assert_eq!(Keyword::from_str(&representation).unwrap(), keyword);
         }
     }
 
