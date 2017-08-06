@@ -12,9 +12,9 @@ pub struct Fits<'a> {
 
 impl<'a> Fits<'a> {
     /// Create a Fits structure with a given primary header
-    pub fn new(primary_header: Header<'a>) -> Fits<'a> {
+    pub fn new(primary_hdu: HDU<'a>) -> Fits<'a> {
         Fits {
-            primary_hdu: HDU::new(primary_header),
+            primary_hdu: primary_hdu,
         }
     }
 }
@@ -258,7 +258,7 @@ mod tests {
             Fits {
                 primary_hdu: HDU::new(Header::new(vec!())),
             },
-            Fits::new(Header::new(vec!()))
+            Fits::new(HDU::new(Header::new(vec!())))
         );
     }
 

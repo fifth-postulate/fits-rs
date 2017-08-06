@@ -3,13 +3,20 @@
 use std::str;
 use std::str::FromStr;
 use nom::{is_space, is_digit};
-use super::types::{Fits, Header, KeywordRecord, Keyword, Value, BlankRecord};
+use super::types::{Fits, HDU, Header, KeywordRecord, Keyword, Value, BlankRecord};
 
 named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub fits<&[u8], Fits>,
        do_parse!(
-           ph: header >>
+           hdu: hdu >>
                many0!(take!(2880)) >>
-               (Fits::new(ph))
+               (Fits::new(hdu))
+       ));
+
+named!(hdu<&[u8], HDU>,
+       do_parse!(
+           h: header >>
+               take!(0) >>
+               (HDU::new(h))
        ));
 
 named!(header<&[u8], Header>,
@@ -178,7 +185,7 @@ named!(blank_record<&[u8], BlankRecord>,
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::super::types::{Fits, Header, KeywordRecord, Keyword, Value, BlankRecord};
+    use super::super::types::{Fits, HDU, Header, KeywordRecord, Keyword, Value, BlankRecord};
     use super::{fits, header, keyword_record, keyword, valuecomment, character_string, logical_constant, real, integer, undefined, end_record, blank_record};
 
     #[test]
@@ -189,7 +196,7 @@ mod tests {
 
         match result {
             IResult::Done(_, f) => {
-                assert_eq!(f, Fits::new(long_cadence_header()));
+                assert_eq!(f, Fits::new(HDU::new(long_cadence_header())));
             },
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
