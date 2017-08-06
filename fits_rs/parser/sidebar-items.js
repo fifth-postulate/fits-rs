@@ -1,1 +1,1 @@
-initSidebarItems({"fn":[["fits","Will parse data from a FITS file into a `Fits` structure"]]});
+initSidebarItems({"enum":[["ParseLogicalConstantError","Problems that could occur when parsing a `str` for a Value::Logical are enumerated here."],["RealParseError","Reasons for converting to a f64 from a parse triple (left, _, right) to fail."]],"fn":[["fits","Will parse data from a FITS file into a `Fits` structure"]]});

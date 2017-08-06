@@ -48,7 +48,7 @@
                    <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                        [<span class='inner'>&#x2212;</span>]
                    </a>
-               </span><a class='srclink' href='../../src/fits_rs/types/mod.rs.html#1-296' title='goto source code'>[src]</a></span></h1>
+               </span><a class='srclink' href='../../src/fits_rs/types/mod.rs.html#1-456' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>The types modules describes all the structures to express FITS files.</p>
 </div><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
 <table>
@@ -56,7 +56,14 @@
                            <td><a class="struct" href="struct.BlankRecord.html"
                                   title='struct fits_rs::types::BlankRecord'>BlankRecord</a></td>
                            <td class='docblock-short'>
-                                <p>A unit tuple that will act as a placeholder for blank records.</p>
+                                <p>A unit struct that will act as a placeholder for blank records.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.DataArray.html"
+                                  title='struct fits_rs::types::DataArray'>DataArray</a></td>
+                           <td class='docblock-short'>
+                                <p>Placeholder for DataArray</p>
                            </td>
                        </tr>
                        <tr class=' module-item'>
@@ -67,18 +74,25 @@
                            </td>
                        </tr>
                        <tr class=' module-item'>
+                           <td><a class="struct" href="struct.HDU.html"
+                                  title='struct fits_rs::types::HDU'>HDU</a></td>
+                           <td class='docblock-short'>
+                                <p>Header Data Unit, combination of a header and an optional data array.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="struct" href="struct.Header.html"
+                                  title='struct fits_rs::types::Header'>Header</a></td>
+                           <td class='docblock-short'>
+                                <p>The primary header of a FITS file.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
                            <td><a class="struct" href="struct.KeywordRecord.html"
                                   title='struct fits_rs::types::KeywordRecord'>KeywordRecord</a></td>
                            <td class='docblock-short'>
                                 <p>A keyword record contains information about a FITS header. It consists of a
 keyword, the corresponding value and an optional comment.</p>
-                           </td>
-                       </tr>
-                       <tr class=' module-item'>
-                           <td><a class="struct" href="struct.PrimaryHeader.html"
-                                  title='struct fits_rs::types::PrimaryHeader'>PrimaryHeader</a></td>
-                           <td class='docblock-short'>
-                                <p>The primary header of a FITS file.</p>
                            </td>
                        </tr></table><h2 id='enums' class='section-header'><a href="#enums">Enums</a></h2>
 <table>
@@ -93,7 +107,21 @@ keyword, the corresponding value and an optional comment.</p>
                            <td><a class="enum" href="enum.ParseKeywordError.html"
                                   title='enum fits_rs::types::ParseKeywordError'>ParseKeywordError</a></td>
                            <td class='docblock-short'>
-                                <p>Problems that could occur when parsing a <code>str</code> are enumerated here.</p>
+                                <p>Problems that could occur when parsing a <code>str</code> for a Keyword are enumerated here.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.Value.html"
+                                  title='enum fits_rs::types::Value'>Value</a></td>
+                           <td class='docblock-short'>
+                                <p>The possible values of a KeywordRecord.</p>
+                           </td>
+                       </tr>
+                       <tr class=' module-item'>
+                           <td><a class="enum" href="enum.ValueRetrievalError.html"
+                                  title='enum fits_rs::types::ValueRetrievalError'>ValueRetrievalError</a></td>
+                           <td class='docblock-short'>
+                                <p>When asking for a value, these things can go wrong.</p>
                            </td>
                        </tr></table></section>
     <section id='search' class="content hidden"></section>
