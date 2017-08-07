@@ -239,6 +239,7 @@ pub enum Keyword {
     TIMVERSN,
     TMINDEX,
     TTABLEID,
+    XTENSION,
     ZMAG,
 }
 
@@ -313,6 +314,7 @@ impl FromStr for Keyword {
             "TIMVERSN" => Ok(Keyword::TIMVERSN),
             "TMINDEX" => Ok(Keyword::TMINDEX),
             "TTABLEID" => Ok(Keyword::TTABLEID),
+            "XTENSION" => Ok(Keyword::XTENSION),
             "ZMAG" => Ok(Keyword::ZMAG),
             input @ _ => {
                 if input.starts_with("NAXIS") {
@@ -424,6 +426,7 @@ mod tests {
             ("TIMVERSN", Keyword::TIMVERSN),
             ("TMINDEX", Keyword::TMINDEX),
             ("TTABLEID", Keyword::TTABLEID),
+            ("XTENSION", Keyword::XTENSION),
             ("ZMAG", Keyword::ZMAG),
         );
 
@@ -460,5 +463,21 @@ mod tests {
         ));
 
         assert_eq!(header.data_array_size(), 8*3*5);
+    }
+
+    #[test]
+    fn extension_header_should_determine_correct_size_primary_data_array() {
+        let header = Header::new(vec!(
+            KeywordRecord::new(Keyword::XTENSION, Value::CharacterString("BINTABLE"), Option::None),
+            KeywordRecord::new(Keyword::BITPIX, Value::Integer(8i64), Option::None),
+            KeywordRecord::new(Keyword::NAXIS, Value::Integer(2i64), Option::None),
+            KeywordRecord::new(Keyword::NAXISn(1u16), Value::Integer(3i64), Option::None),
+            KeywordRecord::new(Keyword::NAXISn(2u16), Value::Integer(5i64), Option::None),
+            KeywordRecord::new(Keyword::GCOUNT, Value::Integer(7i64), Option::None),
+            KeywordRecord::new(Keyword::PCOUNT, Value::Integer(11i64), Option::None),
+            KeywordRecord::new(Keyword::END, Value::Undefined, Option::None),
+        ));
+
+        assert_eq!(header.data_array_size(), 8*7*(11 + 3*5));
     }
 }
