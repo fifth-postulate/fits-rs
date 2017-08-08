@@ -237,9 +237,12 @@ pub enum Keyword {
     TEFF,
     TELESCOP,
     TFIELDS,
+    TFORMn(u16),
     TIMVERSN,
     TMINDEX,
     TTABLEID,
+    TTYPEn(u16),
+    TUNITn(u16),
     XTENSION,
     ZMAG,
 }
@@ -251,6 +254,12 @@ pub enum ParseKeywordError {
     UnknownKeyword,
     /// When `NAXIS<number>` where `<number>` is not an actual number.
     NotAnNaxisNumber,
+    /// When `TFORM<number>` where `<number>` is not an actual number.
+    NotAnTformNumber,
+    /// When `TTYPE<number>` where `<number>` is not an actual number.
+    NotAnTtypeNumber,
+    /// When `TUNIT<number>` where `<number>` is not an actual number.
+    NotAnTunitNumber,
 }
 
 impl FromStr for Keyword {
@@ -319,11 +328,29 @@ impl FromStr for Keyword {
             "XTENSION" => Ok(Keyword::XTENSION),
             "ZMAG" => Ok(Keyword::ZMAG),
             input @ _ => {
-                if input.starts_with("NAXIS") {
+                if input.starts_with("NAXIS") { // TODO refactor repetition
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::NAXISn(n)),
                         Err(_) => Err(ParseKeywordError::NotAnNaxisNumber)
+                    }
+                } else if input.starts_with("TFORM") {
+                    let (_, representation) = input.split_at(5);
+                    match u16::from_str(representation) {
+                        Ok(n) => Ok(Keyword::TFORMn(n)),
+                        Err(_) => Err(ParseKeywordError::NotAnTformNumber)
+                    }
+                } else if input.starts_with("TUNIT") {
+                    let (_, representation) = input.split_at(5);
+                    match u16::from_str(representation) {
+                        Ok(n) => Ok(Keyword::TUNITn(n)),
+                        Err(_) => Err(ParseKeywordError::NotAnTunitNumber)
+                    }
+                } else if input.starts_with("TTYPE") {
+                    let (_, representation) = input.split_at(5);
+                    match u16::from_str(representation) {
+                        Ok(n) => Ok(Keyword::TTYPEn(n)),
+                        Err(_) => Err(ParseKeywordError::NotAnTtypeNumber)
                     }
                 } else {
                     Err(ParseKeywordError::UnknownKeyword)
@@ -444,6 +471,41 @@ mod tests {
         for n in 1u16..1000u16 {
             let keyword = Keyword::NAXISn(n);
             let representation = format!("NAXIS{}", n);
+
+            assert_eq!(Keyword::from_str(&representation).unwrap(), keyword);
+        }
+    }
+
+    #[allow(non_snake_case)]
+    #[test]
+    fn TFORM_should_be_parsed_from_str() {
+        for n in 1u16..1000u16 {
+            let keyword = Keyword::TFORMn(n);
+            let representation = format!("TFORM{}", n);
+
+            assert_eq!(Keyword::from_str(&representation).unwrap(), keyword);
+        }
+    }
+
+    #[allow(non_snake_case)]
+    #[test]
+    fn TTYPE_should_be_parsed_from_str() {
+        for n in 1u16..1000u16 {
+            let keyword = Keyword::TTYPEn(n);
+            let representation = format!("TTYPE{}", n);
+
+            assert_eq!(Keyword::from_str(&representation).unwrap(), keyword);
+        }
+    }
+
+
+
+    #[allow(non_snake_case)]
+    #[test]
+    fn TUNIT_should_be_parsed_from_str() {
+        for n in 1u16..1000u16 {
+            let keyword = Keyword::TUNITn(n);
+            let representation = format!("TUNIT{}", n);
 
             assert_eq!(Keyword::from_str(&representation).unwrap(), keyword);
         }
