@@ -8,7 +8,7 @@ use super::types::{Fits, HDU, Header, KeywordRecord, Keyword, Value, BlankRecord
 named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub fits<&[u8], Fits>,
        do_parse!(
            hdu: hdu >>
-               many0!(take!(2880)) >>
+               extensions >>
                (Fits::new(hdu))
        ));
 
@@ -181,6 +181,9 @@ named!(blank_record<&[u8], BlankRecord>,
            count!(tag!(" "), 80),
            |_| { BlankRecord }
        ));
+
+named!(extensions<&[u8], Vec<&[u8]> >,
+       many0!(take!(2880)));
 
 #[cfg(test)]
 mod tests {
