@@ -251,6 +251,7 @@ pub enum Keyword {
     TZEROn(u16),
     XTENSION,
     ZMAG,
+    Unprocessed, // TODO Remove the unprocessed keyword
 }
 
 /// Problems that could occur when parsing a `str` for a Keyword are enumerated here.
@@ -384,7 +385,8 @@ impl FromStr for Keyword {
                         Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else {
-                    Err(ParseKeywordError::UnknownKeyword)
+                    Ok(Keyword::Unprocessed)
+                    //Err(ParseKeywordError::UnknownKeyword)
                 }
             }
         }
