@@ -234,11 +234,14 @@ pub enum Keyword {
     RA_OBJ,
     RMAG,
     SIMPLE,
+    TDIMn(u16),
+    TDISPn(u16),
     TEFF,
     TELESCOP,
     TFIELDS,
     TFORMn(u16),
     TIMVERSN,
+    THEAP,
     TMINDEX,
     TNULLn(u16),
     TSCALn(u16),
@@ -319,22 +322,35 @@ impl FromStr for Keyword {
             "TEFF" => Ok(Keyword::TEFF),
             "TELESCOP" => Ok(Keyword::TELESCOP),
             "TFIELDS" => Ok(Keyword::TFIELDS),
+            "THEAP" => Ok(Keyword::THEAP),
             "TIMVERSN" => Ok(Keyword::TIMVERSN),
             "TMINDEX" => Ok(Keyword::TMINDEX),
             "TTABLEID" => Ok(Keyword::TTABLEID),
             "XTENSION" => Ok(Keyword::XTENSION),
             "ZMAG" => Ok(Keyword::ZMAG),
             input @ _ => {
-                if input.starts_with("NAXIS") { // TODO refactor repetition
+                if input.starts_with("TDIM") { // TODO refactor repetition
+                    let (_, representation) = input.split_at(4);
+                    match u16::from_str(representation) {
+                        Ok(n) => Ok(Keyword::TDIMn(n)),
+                        Err(_) => Err(ParseKeywordError::NotANumber)
+                    }
+                } else if input.starts_with("TDISP") {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::NAXISn(n)),
+                        Ok(n) => Ok(Keyword::TDISPn(n)),
                         Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else if input.starts_with("TFORM") {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::TFORMn(n)),
+                        Err(_) => Err(ParseKeywordError::NotANumber)
+                    }
+                } else if input.starts_with("NAXIS") {
+                    let (_, representation) = input.split_at(5);
+                    match u16::from_str(representation) {
+                        Ok(n) => Ok(Keyword::NAXISn(n)),
                         Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else if input.starts_with("TNULL") {
@@ -469,6 +485,7 @@ mod tests {
             ("TELESCOP", Keyword::TELESCOP),
             ("TFIELDS", Keyword::TFIELDS),
             ("TIMVERSN", Keyword::TIMVERSN),
+            ("THEAP", Keyword::THEAP),
             ("TMINDEX", Keyword::TMINDEX),
             ("TTABLEID", Keyword::TTABLEID),
             ("XTENSION", Keyword::XTENSION),
@@ -477,6 +494,28 @@ mod tests {
 
         for (input, expected) in data {
             assert_eq!(Keyword::from_str(input).unwrap(), expected);
+        }
+    }
+
+    #[allow(non_snake_case)]
+    #[test]
+    fn TDIMn_should_be_parsed_from_str() {
+        for n in 1u16..1000u16 {
+            let keyword = Keyword::TDIMn(n);
+            let representation = format!("TDIM{}", n);
+
+            assert_eq!(Keyword::from_str(&representation).unwrap(), keyword);
+        }
+    }
+
+    #[allow(non_snake_case)]
+    #[test]
+    fn TDISPn_should_be_parsed_from_str() {
+        for n in 1u16..1000u16 {
+            let keyword = Keyword::TDISPn(n);
+            let representation = format!("TDISP{}", n);
+
+            assert_eq!(Keyword::from_str(&representation).unwrap(), keyword);
         }
     }
 
