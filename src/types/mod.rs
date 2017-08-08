@@ -255,20 +255,8 @@ pub enum Keyword {
 pub enum ParseKeywordError {
     /// When a str can not be recognized as a keyword, this error will be returned.
     UnknownKeyword,
-    /// When `NAXIS<number>` where `<number>` is not an actual number.
-    NotAnNaxisNumber,
-    /// When `TFORM<number>` where `<number>` is not an actual number.
-    NotAnTformNumber,
-    /// When `TSCAL<number>` where `<number>` is not an actual number.
-    NotAnTscalNumber,
-    /// When `TTYPE<number>` where `<number>` is not an actual number.
-    NotAnTtypeNumber,
-    /// When `TUNIT<number>` where `<number>` is not an actual number.
-    NotAnTunitNumber,
-    /// When `TZERO<number>` where `<number>` is not an actual number.
-    NotAnTzeroNumber,
-    /// Not a
-    NotAnTnullNumber,
+    /// When `NAXIS<number>` et. al. are parsed where `<number>` is not an actual number.
+    NotANumber,
 }
 
 impl FromStr for Keyword {
@@ -341,43 +329,43 @@ impl FromStr for Keyword {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::NAXISn(n)),
-                        Err(_) => Err(ParseKeywordError::NotAnNaxisNumber)
+                        Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else if input.starts_with("TFORM") {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::TFORMn(n)),
-                        Err(_) => Err(ParseKeywordError::NotAnTformNumber)
+                        Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else if input.starts_with("TNULL") {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::TNULLn(n)),
-                        Err(_) => Err(ParseKeywordError::NotAnTnullNumber)
+                        Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else if input.starts_with("TSCAL") {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::TSCALn(n)),
-                        Err(_) => Err(ParseKeywordError::NotAnTscalNumber)
+                        Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else if input.starts_with("TTYPE") {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::TTYPEn(n)),
-                        Err(_) => Err(ParseKeywordError::NotAnTtypeNumber)
+                        Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 }  else if input.starts_with("TUNIT") {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::TUNITn(n)),
-                        Err(_) => Err(ParseKeywordError::NotAnTunitNumber)
+                        Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else if input.starts_with("TZERO") {
                     let (_, representation) = input.split_at(5);
                     match u16::from_str(representation) {
                         Ok(n) => Ok(Keyword::TZEROn(n)),
-                        Err(_) => Err(ParseKeywordError::NotAnTzeroNumber)
+                        Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else {
                     Err(ParseKeywordError::UnknownKeyword)
