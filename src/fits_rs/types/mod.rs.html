@@ -677,6 +677,8 @@
 <span id="632">632</span>
 <span id="633">633</span>
 <span id="634">634</span>
+<span id="635">635</span>
+<span id="636">636</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! The types modules describes all the structures to express FITS files.</span>
 
@@ -931,6 +933,7 @@
     <span class="ident">TZEROn</span>(<span class="ident">u16</span>),
     <span class="ident">XTENSION</span>,
     <span class="ident">ZMAG</span>,
+    <span class="ident">Unprocessed</span>, <span class="comment">// TODO Remove the unprocessed keyword</span>
 }
 
 <span class="doccomment">/// Problems that could occur when parsing a `str` for a Keyword are enumerated here.</span>
@@ -1064,7 +1067,8 @@
                         <span class="prelude-val">Err</span>(_) <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">ParseKeywordError</span>::<span class="ident">NotANumber</span>)
                     }
                 } <span class="kw">else</span> {
-                    <span class="prelude-val">Err</span>(<span class="ident">ParseKeywordError</span>::<span class="ident">UnknownKeyword</span>)
+                    <span class="prelude-val">Ok</span>(<span class="ident">Keyword</span>::<span class="ident">Unprocessed</span>)
+                    <span class="comment">//Err(ParseKeywordError::UnknownKeyword)</span>
                 }
             }
         }

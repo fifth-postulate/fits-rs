@@ -603,6 +603,9 @@
 <span id="558">558</span>
 <span id="559">559</span>
 <span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! The parser module is responsible for parsing FITS files.</span>
 
@@ -614,7 +617,7 @@
 <span class="macro">named</span><span class="macro">!</span>(<span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;Will parse data from a FITS file into a `Fits` structure&quot;</span>]</span>, <span class="kw">pub</span> <span class="ident">fits</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Fits</span><span class="op">&gt;</span>,
        <span class="macro">do_parse</span><span class="macro">!</span>(
            <span class="ident">hdu</span>: <span class="ident">hdu</span> <span class="op">&gt;&gt;</span>
-               <span class="macro">many0</span><span class="macro">!</span>(<span class="macro">take</span><span class="macro">!</span>(<span class="number">2880</span>)) <span class="op">&gt;&gt;</span>
+               <span class="ident">extensions</span> <span class="op">&gt;&gt;</span>
                (<span class="ident">Fits</span>::<span class="ident">new</span>(<span class="ident">hdu</span>))
        ));
 
@@ -787,6 +790,9 @@
            <span class="macro">count</span><span class="macro">!</span>(<span class="macro">tag</span><span class="macro">!</span>(<span class="string">&quot; &quot;</span>), <span class="number">80</span>),
            <span class="op">|</span>_<span class="op">|</span> { <span class="ident">BlankRecord</span> }
        ));
+
+<span class="macro">named</span><span class="macro">!</span>(<span class="ident">extensions</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span> <span class="op">&gt;</span>,
+       <span class="macro">many0</span><span class="macro">!</span>(<span class="macro">take</span><span class="macro">!</span>(<span class="number">2880</span>)));
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
