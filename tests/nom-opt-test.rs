@@ -26,6 +26,7 @@ fn without_complete_should_parse_digit_alpha() {
 }
 
 #[ignore]
+#[allow(non_snake_case)]
 #[test]
 fn without_complete_should_parse_digit_TEST_SHOULD_BE_IGNORED() {
     assert_eq!(without_complete(&b"1"[..]), IResult::Done(&b""[..], (&b"1"[..], Option::None)));
