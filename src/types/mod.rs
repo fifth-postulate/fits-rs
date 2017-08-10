@@ -51,9 +51,9 @@ impl<'a> Header<'a> {
     /// Determines the size of the data array following this header.
     pub fn data_array_size(&self) -> u64 {
         if self.is_primary() {
-            self.primary_data_array_size()
+            lmle(self.primary_data_array_size(), 2880)
         } else {
-            self.extention_data_array_size()
+            lmle(self.extention_data_array_size(), 2880)
         }
     }
 
@@ -393,6 +393,17 @@ impl FromStr for Keyword {
     }
 }
 
+/// For input n and k, finds the least multiple of k such that n <= q*k and
+/// (q-1)*k < n
+fn lmle(n: u64, k: u64) -> u64 {
+    let (q, r) = (n / k, n % k);
+    if r == 0 {
+        q * k
+    } else {
+        (q + 1) * k
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use std::str::FromStr;
@@ -615,14 +626,14 @@ mod tests {
             KeywordRecord::new(Keyword::END, Value::Undefined, Option::None),
         ));
 
-        assert_eq!(header.data_array_size(), 8*3*5);
+        assert_eq!(header.data_array_size(), 1*2880);
     }
 
     #[test]
     fn extension_header_should_determine_correct_size_primary_data_array() {
         let header = Header::new(vec!(
             KeywordRecord::new(Keyword::XTENSION, Value::CharacterString("BINTABLE"), Option::None),
-            KeywordRecord::new(Keyword::BITPIX, Value::Integer(8i64), Option::None),
+            KeywordRecord::new(Keyword::BITPIX, Value::Integer(16i64), Option::None),
             KeywordRecord::new(Keyword::NAXIS, Value::Integer(2i64), Option::None),
             KeywordRecord::new(Keyword::NAXISn(1u16), Value::Integer(3i64), Option::None),
             KeywordRecord::new(Keyword::NAXISn(2u16), Value::Integer(5i64), Option::None),
@@ -631,6 +642,6 @@ mod tests {
             KeywordRecord::new(Keyword::END, Value::Undefined, Option::None),
         ));
 
-        assert_eq!(header.data_array_size(), 8*7*(11 + 3*5));
+        assert_eq!(header.data_array_size(), 2*2880);
     }
 }
