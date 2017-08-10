@@ -679,6 +679,17 @@
 <span id="634">634</span>
 <span id="635">635</span>
 <span id="636">636</span>
+<span id="637">637</span>
+<span id="638">638</span>
+<span id="639">639</span>
+<span id="640">640</span>
+<span id="641">641</span>
+<span id="642">642</span>
+<span id="643">643</span>
+<span id="644">644</span>
+<span id="645">645</span>
+<span id="646">646</span>
+<span id="647">647</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! The types modules describes all the structures to express FITS files.</span>
 
@@ -733,9 +744,9 @@
     <span class="doccomment">/// Determines the size of the data array following this header.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">data_array_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">u64</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_primary</span>() {
-            <span class="self">self</span>.<span class="ident">primary_data_array_size</span>()
+            <span class="ident">lmle</span>(<span class="self">self</span>.<span class="ident">primary_data_array_size</span>(), <span class="number">2880</span>)
         } <span class="kw">else</span> {
-            <span class="self">self</span>.<span class="ident">extention_data_array_size</span>()
+            <span class="ident">lmle</span>(<span class="self">self</span>.<span class="ident">extention_data_array_size</span>(), <span class="number">2880</span>)
         }
     }
 
@@ -1075,6 +1086,17 @@
     }
 }
 
+<span class="doccomment">/// For input n and k, finds the least multiple of k such that n &lt;= q*k and</span>
+<span class="doccomment">/// (q-1)*k &lt; n</span>
+<span class="kw">fn</span> <span class="ident">lmle</span>(<span class="ident">n</span>: <span class="ident">u64</span>, <span class="ident">k</span>: <span class="ident">u64</span>) <span class="op">-&gt;</span> <span class="ident">u64</span> {
+    <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">r</span>) <span class="op">=</span> (<span class="ident">n</span> <span class="op">/</span> <span class="ident">k</span>, <span class="ident">n</span> <span class="op">%</span> <span class="ident">k</span>);
+    <span class="kw">if</span> <span class="ident">r</span> <span class="op">==</span> <span class="number">0</span> {
+        <span class="ident">q</span> <span class="op">*</span> <span class="ident">k</span>
+    } <span class="kw">else</span> {
+        (<span class="ident">q</span> <span class="op">+</span> <span class="number">1</span>) <span class="op">*</span> <span class="ident">k</span>
+    }
+}
+
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">str</span>::<span class="ident">FromStr</span>;
@@ -1297,14 +1319,14 @@
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">END</span>, <span class="ident">Value</span>::<span class="ident">Undefined</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
         ));
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">data_array_size</span>(), <span class="number">8</span><span class="kw-2">*</span><span class="number">3</span><span class="kw-2">*</span><span class="number">5</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">data_array_size</span>(), <span class="number">1</span><span class="kw-2">*</span><span class="number">2880</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
     <span class="kw">fn</span> <span class="ident">extension_header_should_determine_correct_size_primary_data_array</span>() {
         <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">Header</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>(
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">XTENSION</span>, <span class="ident">Value</span>::<span class="ident">CharacterString</span>(<span class="string">&quot;BINTABLE&quot;</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">BITPIX</span>, <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">8i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">BITPIX</span>, <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">16i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXIS</span>, <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">2i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXISn</span>(<span class="number">1u16</span>), <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">3i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXISn</span>(<span class="number">2u16</span>), <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">5i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
@@ -1313,7 +1335,7 @@
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">END</span>, <span class="ident">Value</span>::<span class="ident">Undefined</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
         ));
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">data_array_size</span>(), <span class="number">8</span><span class="kw-2">*</span><span class="number">7</span><span class="kw-2">*</span>(<span class="number">11</span> <span class="op">+</span> <span class="number">3</span><span class="kw-2">*</span><span class="number">5</span>));
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">data_array_size</span>(), <span class="number">2</span><span class="kw-2">*</span><span class="number">2880</span>);
     }
 }
 </pre>
