@@ -48,11 +48,11 @@ named!(valuecomment<&[u8], (Value, Option<&str>)>,
            take!(70),
            pair!(
                value,
-               opt!(comment)
+               opt!(complete!(comment))
            )));
 
 named!(value<&[u8], Value>,
-       alt!(character_string | logical_constant | real | integer | undefined));
+       alt_complete!(character_string | logical_constant | real | integer | undefined));
 
 named!(character_string<&[u8], Value>,
        map!(
@@ -215,6 +215,19 @@ mod tests {
         match result {
             IResult::Done(_, h) => assert_eq!(h, long_cadence_header()),
             IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn header_should_parse_a_extension_header(){
+        let data = include_bytes!("../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits");
+
+        let result = header(&data[(2*2880)..(10*2880)]);
+
+        match result {
+            IResult::Done(_, h) => assert_eq!(h.keyword_records.len(), 284),
+            IResult::Error(e) => panic!(format!("Did not expect an error: {:?}", e)),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
     }
@@ -410,6 +423,26 @@ mod tests {
     }
 
     #[test]
+    fn keyword_record_should_parse_a_keyword_record_without_a_comment(){
+        let data = "KEPLERID=            200164267                                                  "
+            .as_bytes();
+
+        let result = keyword_record(data);
+
+        match result {
+            IResult::Done(_,k) => {
+                assert_eq!(k, KeywordRecord::new(
+                    Keyword::KEPLERID,
+                    Value::Integer(200164267),
+                    Option::None,
+                ))
+            },
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
     fn valuecomment_should_parse_a_valuecomment(){
         let data = "'EPIC 200164267'     / string version of target id                    "
             .as_bytes();
@@ -423,6 +456,23 @@ mod tests {
             },
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
+        }
+    }
+
+    #[test]
+    fn valuecomment_should_parse_a_valuecomment_without_a_comment(){
+        let data = "200164267                                                                                         "
+            .as_bytes();
+
+        let result = valuecomment(data);
+
+        match result {
+            IResult::Done(_, (value, comment)) => {
+                assert_eq!(value, Value::Integer(200164267));
+                assert_eq!(comment, Option::None);
+            },
+            IResult::Error(_) => panic!("Did not expect an error"),
+            IResult::Incomplete(e) => panic!(format!("Did not expect to be incomplete: {:?}", e))
         }
     }
 
