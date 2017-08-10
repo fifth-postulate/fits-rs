@@ -198,8 +198,9 @@ mod tests {
         let result = fits(data);
 
         match result {
-            IResult::Done(_, f) => {
+            IResult::Done(tail, f) => {
                 assert_eq!(f, Fits::new(HDU::new(long_cadence_header())));
+                assert_eq!(tail.len(), 0);
             },
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
