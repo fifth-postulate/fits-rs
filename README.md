@@ -24,6 +24,7 @@ read the primary header.
 ```rust
     let args: Vec<String> = env::args().collect();
     let filename = &args[1];
+    let header_index = u64:from_str(&args[2]).expect("should be a non-negative number");
 
     let mut f = File::open(filename).expect("file not found");
     let mut buffer: Vec<u8> = vec!();
@@ -33,7 +34,13 @@ read the primary header.
 
     match result {
         IResult::Done(_, trappist1) => {
-            for record in trappist1.primary_header.keyword_records {
+            let header: &Header = if header_index = 0 {
+                &trappist1.primary_hdu.header
+            } else {
+                &trappist1.extensions[header_index].header
+            }
+
+            for record in header.keyword_records {
                 println!("{:?}", record);
             }
         },
@@ -41,7 +48,7 @@ read the primary header.
     }
 ```
 
-You can find this binary in [`src/bin/primary_header.rs`](https://github.com/fifth-postulate/fits-rs/blob/master/src/bin/primary_header.rs).
+You can find this binary in [`src/bin/headers.rs`](https://github.com/fifth-postulate/fits-rs/blob/master/src/bin/headers.rs).
 
 Unfortunately, some extensions are in binary.
 
