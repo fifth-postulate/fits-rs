@@ -182,8 +182,8 @@ named!(blank_record<&[u8], BlankRecord>,
            |_| { BlankRecord }
        ));
 
-named!(extensions<&[u8], Vec<&[u8]> >,
-       many0!(take!(2880)));
+named!(extensions<&[u8], Vec<HDU> >,
+       many0!(hdu));
 
 #[cfg(test)]
 mod tests {
