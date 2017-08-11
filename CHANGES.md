@@ -4,6 +4,7 @@
 * Parse `KeywordRecord` values into actual `Value`s.
 * Introduce `HDU`, a _Header Data Unit_.
 * Parse `NAXISn` keyword correctly.
+* Parse extension headers.
 
 ## 0.2.0
 ### Changes
