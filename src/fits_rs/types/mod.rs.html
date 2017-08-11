@@ -690,6 +690,10 @@
 <span id="645">645</span>
 <span id="646">646</span>
 <span id="647">647</span>
+<span id="648">648</span>
+<span id="649">649</span>
+<span id="650">650</span>
+<span id="651">651</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! The types modules describes all the structures to express FITS files.</span>
 
@@ -701,13 +705,16 @@
 <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">Fits</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// The primary HDU</span>
     <span class="kw">pub</span> <span class="ident">primary_hdu</span>: <span class="ident">HDU</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>,
+    <span class="doccomment">/// The extention HDUs</span>
+    <span class="kw">pub</span> <span class="ident">extensions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HDU</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;&gt;</span>,
 }
 
 <span class="kw">impl</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> <span class="ident">Fits</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
     <span class="doccomment">/// Create a Fits structure with a given primary header</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">primary_hdu</span>: <span class="ident">HDU</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Fits</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">new</span>(<span class="ident">primary_hdu</span>: <span class="ident">HDU</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span>, <span class="ident">extensions</span>: <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HDU</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;&gt;</span>) <span class="op">-&gt;</span> <span class="ident">Fits</span><span class="op">&lt;</span><span class="lifetime">&#39;a</span><span class="op">&gt;</span> {
         <span class="ident">Fits</span> {
             <span class="ident">primary_hdu</span>: <span class="ident">primary_hdu</span>,
+            <span class="ident">extensions</span>: <span class="ident">extensions</span>,
         }
     }
 }
@@ -741,12 +748,12 @@
         <span class="ident">Header</span> { <span class="ident">keyword_records</span>: <span class="ident">keyword_records</span> }
     }
 
-    <span class="doccomment">/// Determines the size of the data array following this header.</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">data_array_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">u64</span> {
+    <span class="doccomment">/// Determines the size in bits of the data array following this header.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">data_array_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
         <span class="kw">if</span> <span class="self">self</span>.<span class="ident">is_primary</span>() {
-            <span class="ident">lmle</span>(<span class="self">self</span>.<span class="ident">primary_data_array_size</span>(), <span class="number">2880</span>)
+            <span class="ident">lmle</span>(<span class="self">self</span>.<span class="ident">primary_data_array_size</span>(), <span class="number">2880</span><span class="kw-2">*</span><span class="number">8</span>)
         } <span class="kw">else</span> {
-            <span class="ident">lmle</span>(<span class="self">self</span>.<span class="ident">extention_data_array_size</span>(), <span class="number">2880</span>)
+            <span class="ident">lmle</span>(<span class="self">self</span>.<span class="ident">extention_data_array_size</span>(), <span class="number">2880</span><span class="kw-2">*</span><span class="number">8</span>)
         }
     }
 
@@ -763,14 +770,14 @@
         <span class="bool-val">false</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">primary_data_array_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">u64</span> {
-        (<span class="self">self</span>.<span class="ident">integer_value_of</span>(<span class="kw-2">&amp;</span><span class="ident">Keyword</span>::<span class="ident">BITPIX</span>).<span class="ident">unwrap_or</span>(<span class="number">0i64</span>).<span class="ident">abs</span>() <span class="op">*</span> <span class="self">self</span>.<span class="ident">naxis_product</span>()) <span class="kw">as</span> <span class="ident">u64</span>
+    <span class="kw">fn</span> <span class="ident">primary_data_array_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
+        (<span class="self">self</span>.<span class="ident">integer_value_of</span>(<span class="kw-2">&amp;</span><span class="ident">Keyword</span>::<span class="ident">BITPIX</span>).<span class="ident">unwrap_or</span>(<span class="number">0i64</span>).<span class="ident">abs</span>() <span class="op">*</span> <span class="self">self</span>.<span class="ident">naxis_product</span>()) <span class="kw">as</span> <span class="ident">usize</span>
     }
 
-    <span class="kw">fn</span> <span class="ident">extention_data_array_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">u64</span> { <span class="comment">// TODO correctly implement</span>
+    <span class="kw">fn</span> <span class="ident">extention_data_array_size</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
         (<span class="self">self</span>.<span class="ident">integer_value_of</span>(<span class="kw-2">&amp;</span><span class="ident">Keyword</span>::<span class="ident">BITPIX</span>).<span class="ident">unwrap_or</span>(<span class="number">0i64</span>).<span class="ident">abs</span>() <span class="op">*</span>
          <span class="self">self</span>.<span class="ident">integer_value_of</span>(<span class="kw-2">&amp;</span><span class="ident">Keyword</span>::<span class="ident">GCOUNT</span>).<span class="ident">unwrap_or</span>(<span class="number">1i64</span>) <span class="op">*</span>
-         (<span class="self">self</span>.<span class="ident">integer_value_of</span>(<span class="kw-2">&amp;</span><span class="ident">Keyword</span>::<span class="ident">PCOUNT</span>).<span class="ident">unwrap_or</span>(<span class="number">0i64</span>) <span class="op">+</span> <span class="self">self</span>.<span class="ident">naxis_product</span>())) <span class="kw">as</span> <span class="ident">u64</span>
+         (<span class="self">self</span>.<span class="ident">integer_value_of</span>(<span class="kw-2">&amp;</span><span class="ident">Keyword</span>::<span class="ident">PCOUNT</span>).<span class="ident">unwrap_or</span>(<span class="number">0i64</span>) <span class="op">+</span> <span class="self">self</span>.<span class="ident">naxis_product</span>())) <span class="kw">as</span> <span class="ident">usize</span>
     }
 
     <span class="kw">fn</span> <span class="ident">integer_value_of</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">keyword</span>: <span class="kw-2">&amp;</span><span class="ident">Keyword</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">i64</span>, <span class="ident">ValueRetrievalError</span><span class="op">&gt;</span> {
@@ -1088,7 +1095,7 @@
 
 <span class="doccomment">/// For input n and k, finds the least multiple of k such that n &lt;= q*k and</span>
 <span class="doccomment">/// (q-1)*k &lt; n</span>
-<span class="kw">fn</span> <span class="ident">lmle</span>(<span class="ident">n</span>: <span class="ident">u64</span>, <span class="ident">k</span>: <span class="ident">u64</span>) <span class="op">-&gt;</span> <span class="ident">u64</span> {
+<span class="kw">fn</span> <span class="ident">lmle</span>(<span class="ident">n</span>: <span class="ident">usize</span>, <span class="ident">k</span>: <span class="ident">usize</span>) <span class="op">-&gt;</span> <span class="ident">usize</span> {
     <span class="kw">let</span> (<span class="ident">q</span>, <span class="ident">r</span>) <span class="op">=</span> (<span class="ident">n</span> <span class="op">/</span> <span class="ident">k</span>, <span class="ident">n</span> <span class="op">%</span> <span class="ident">k</span>);
     <span class="kw">if</span> <span class="ident">r</span> <span class="op">==</span> <span class="number">0</span> {
         <span class="ident">q</span> <span class="op">*</span> <span class="ident">k</span>
@@ -1107,8 +1114,9 @@
         <span class="macro">assert_eq</span><span class="macro">!</span>(
             <span class="ident">Fits</span> {
                 <span class="ident">primary_hdu</span>: <span class="ident">HDU</span>::<span class="ident">new</span>(<span class="ident">Header</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>())),
+                <span class="ident">extensions</span>: <span class="macro">vec</span><span class="macro">!</span>(),
             },
-            <span class="ident">Fits</span>::<span class="ident">new</span>(<span class="ident">HDU</span>::<span class="ident">new</span>(<span class="ident">Header</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>())))
+            <span class="ident">Fits</span>::<span class="ident">new</span>(<span class="ident">HDU</span>::<span class="ident">new</span>(<span class="ident">Header</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>())), <span class="macro">vec</span><span class="macro">!</span>())
         );
     }
 
@@ -1309,7 +1317,7 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">primary_header_should_determine_correct_size_primary_data_array</span>() {
+    <span class="kw">fn</span> <span class="ident">primary_header_should_determine_correct_data_array_size</span>() {
         <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">Header</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>(
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">SIMPLE</span>, <span class="ident">Value</span>::<span class="ident">Logical</span>(<span class="bool-val">true</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">BITPIX</span>, <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">8i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
@@ -1319,14 +1327,14 @@
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">END</span>, <span class="ident">Value</span>::<span class="ident">Undefined</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
         ));
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">data_array_size</span>(), <span class="number">1</span><span class="kw-2">*</span><span class="number">2880</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">data_array_size</span>(), <span class="number">1</span><span class="kw-2">*</span>(<span class="number">2880</span><span class="kw-2">*</span><span class="number">8</span>) <span class="kw">as</span> <span class="ident">usize</span>);
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">extension_header_should_determine_correct_size_primary_data_array</span>() {
+    <span class="kw">fn</span> <span class="ident">extension_header_should_determine_correct_data_array_size</span>() {
         <span class="kw">let</span> <span class="ident">header</span> <span class="op">=</span> <span class="ident">Header</span>::<span class="ident">new</span>(<span class="macro">vec</span><span class="macro">!</span>(
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">XTENSION</span>, <span class="ident">Value</span>::<span class="ident">CharacterString</span>(<span class="string">&quot;BINTABLE&quot;</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
-            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">BITPIX</span>, <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">16i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
+            <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">BITPIX</span>, <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">128i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXIS</span>, <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">2i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXISn</span>(<span class="number">1u16</span>), <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">3i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">NAXISn</span>(<span class="number">2u16</span>), <span class="ident">Value</span>::<span class="ident">Integer</span>(<span class="number">5i64</span>), <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
@@ -1335,7 +1343,7 @@
             <span class="ident">KeywordRecord</span>::<span class="ident">new</span>(<span class="ident">Keyword</span>::<span class="ident">END</span>, <span class="ident">Value</span>::<span class="ident">Undefined</span>, <span class="prelude-ty">Option</span>::<span class="prelude-val">None</span>),
         ));
 
-        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">data_array_size</span>(), <span class="number">2</span><span class="kw-2">*</span><span class="number">2880</span>);
+        <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">header</span>.<span class="ident">data_array_size</span>(), <span class="number">2</span><span class="kw-2">*</span>(<span class="number">2880</span><span class="kw-2">*</span><span class="number">8</span>) <span class="kw">as</span> <span class="ident">usize</span>);
     }
 }
 </pre>

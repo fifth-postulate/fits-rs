@@ -656,6 +656,21 @@
 <span id="611">611</span>
 <span id="612">612</span>
 <span id="613">613</span>
+<span id="614">614</span>
+<span id="615">615</span>
+<span id="616">616</span>
+<span id="617">617</span>
+<span id="618">618</span>
+<span id="619">619</span>
+<span id="620">620</span>
+<span id="621">621</span>
+<span id="622">622</span>
+<span id="623">623</span>
+<span id="624">624</span>
+<span id="625">625</span>
+<span id="626">626</span>
+<span id="627">627</span>
+<span id="628">628</span>
 </pre><pre class="rust ">
 <span class="doccomment">//! The parser module is responsible for parsing FITS files.</span>
 
@@ -667,14 +682,14 @@
 <span class="macro">named</span><span class="macro">!</span>(<span class="attribute">#[<span class="ident">doc</span> <span class="op">=</span> <span class="string">&quot;Will parse data from a FITS file into a `Fits` structure&quot;</span>]</span>, <span class="kw">pub</span> <span class="ident">fits</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Fits</span><span class="op">&gt;</span>,
        <span class="macro">do_parse</span><span class="macro">!</span>(
            <span class="ident">hdu</span>: <span class="ident">hdu</span> <span class="op">&gt;&gt;</span>
-               <span class="ident">extensions</span> <span class="op">&gt;&gt;</span>
-               (<span class="ident">Fits</span>::<span class="ident">new</span>(<span class="ident">hdu</span>))
+           <span class="ident">extensions</span>: <span class="ident">extensions</span> <span class="op">&gt;&gt;</span>
+               (<span class="ident">Fits</span>::<span class="ident">new</span>(<span class="ident">hdu</span>, <span class="ident">extensions</span>))
        ));
 
 <span class="macro">named</span><span class="macro">!</span>(<span class="ident">hdu</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">HDU</span><span class="op">&gt;</span>,
        <span class="macro">do_parse</span><span class="macro">!</span>(
            <span class="ident">h</span>: <span class="ident">header</span> <span class="op">&gt;&gt;</span>
-               <span class="macro">take</span><span class="macro">!</span>(<span class="ident">h</span>.<span class="ident">data_array_size</span>()) <span class="op">&gt;&gt;</span>
+               <span class="macro">take</span><span class="macro">!</span>(<span class="ident">h</span>.<span class="ident">data_array_size</span>()<span class="op">/</span><span class="number">8</span>) <span class="op">&gt;&gt;</span>
                (<span class="ident">HDU</span>::<span class="ident">new</span>(<span class="ident">h</span>))
        ));
 
@@ -841,13 +856,13 @@
            <span class="op">|</span>_<span class="op">|</span> { <span class="ident">BlankRecord</span> }
        ));
 
-<span class="macro">named</span><span class="macro">!</span>(<span class="ident">extensions</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Vec</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>]<span class="op">&gt;</span> <span class="op">&gt;</span>,
-       <span class="macro">many0</span><span class="macro">!</span>(<span class="macro">take</span><span class="macro">!</span>(<span class="number">2880</span>)));
+<span class="macro">named</span><span class="macro">!</span>(<span class="ident">extensions</span><span class="op">&lt;</span><span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">HDU</span><span class="op">&gt;</span> <span class="op">&gt;</span>,
+       <span class="macro">many0</span><span class="macro">!</span>(<span class="ident">hdu</span>));
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">test</span>)]</span>
 <span class="kw">mod</span> <span class="ident">tests</span> {
     <span class="kw">use</span> <span class="ident">nom</span>::{<span class="ident">IResult</span>};
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">types</span>::{<span class="ident">Fits</span>, <span class="ident">HDU</span>, <span class="ident">Header</span>, <span class="ident">KeywordRecord</span>, <span class="ident">Keyword</span>, <span class="ident">Value</span>, <span class="ident">BlankRecord</span>};
+    <span class="kw">use</span> <span class="kw">super</span>::<span class="kw">super</span>::<span class="ident">types</span>::{<span class="ident">HDU</span>, <span class="ident">Header</span>, <span class="ident">KeywordRecord</span>, <span class="ident">Keyword</span>, <span class="ident">Value</span>, <span class="ident">BlankRecord</span>};
     <span class="kw">use</span> <span class="kw">super</span>::{<span class="ident">fits</span>, <span class="ident">header</span>, <span class="ident">keyword_record</span>, <span class="ident">keyword</span>, <span class="ident">valuecomment</span>, <span class="ident">character_string</span>, <span class="ident">logical_constant</span>, <span class="ident">real</span>, <span class="ident">integer</span>, <span class="ident">undefined</span>, <span class="ident">end_record</span>, <span class="ident">blank_record</span>};
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
@@ -857,8 +872,10 @@
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">fits</span>(<span class="ident">data</span>);
 
         <span class="kw">match</span> <span class="ident">result</span> {
-            <span class="ident">IResult</span>::<span class="ident">Done</span>(_, <span class="ident">f</span>) <span class="op">=&gt;</span> {
-                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">f</span>, <span class="ident">Fits</span>::<span class="ident">new</span>(<span class="ident">HDU</span>::<span class="ident">new</span>(<span class="ident">long_cadence_header</span>())));
+            <span class="ident">IResult</span>::<span class="ident">Done</span>(<span class="ident">tail</span>, <span class="ident">f</span>) <span class="op">=&gt;</span> {
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">f</span>.<span class="ident">primary_hdu</span>, <span class="ident">HDU</span>::<span class="ident">new</span>(<span class="ident">long_cadence_header</span>()));
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">f</span>.<span class="ident">extensions</span>.<span class="ident">len</span>(), <span class="number">2</span>);
+                <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">tail</span>.<span class="ident">len</span>(), <span class="number">0</span>);
             },
             <span class="ident">IResult</span>::<span class="ident">Error</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect an error&quot;</span>),
             <span class="ident">IResult</span>::<span class="ident">Incomplete</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect to be incomplete&quot;</span>)
@@ -1258,13 +1275,26 @@
     }
 
     <span class="attribute">#[<span class="ident">test</span>]</span>
-    <span class="kw">fn</span> <span class="ident">header_should_have_a_data_array_size_of_0</span>(){
+    <span class="kw">fn</span> <span class="ident">primary_header_should_have_a_correct_data_array_size</span>(){
         <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">include_bytes</span><span class="macro">!</span>(<span class="string">&quot;../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits&quot;</span>);
 
         <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">header</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>[<span class="number">0</span>..(<span class="number">2</span><span class="kw-2">*</span><span class="number">2880</span>)]);
 
         <span class="kw">match</span> <span class="ident">result</span> {
-            <span class="ident">IResult</span>::<span class="ident">Done</span>(_, <span class="ident">h</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">h</span>.<span class="ident">data_array_size</span>(), <span class="number">0u64</span>),
+            <span class="ident">IResult</span>::<span class="ident">Done</span>(_, <span class="ident">h</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">h</span>.<span class="ident">data_array_size</span>(), <span class="number">0usize</span>),
+            <span class="ident">IResult</span>::<span class="ident">Error</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect an error&quot;</span>),
+            <span class="ident">IResult</span>::<span class="ident">Incomplete</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect to be incomplete&quot;</span>)
+        }
+    }
+
+    <span class="attribute">#[<span class="ident">test</span>]</span>
+    <span class="kw">fn</span> <span class="ident">first_extension_header_should_have_a_correct_data_array_size</span>(){
+        <span class="kw">let</span> <span class="ident">data</span> <span class="op">=</span> <span class="macro">include_bytes</span><span class="macro">!</span>(<span class="string">&quot;../../assets/images/k2-trappist1-unofficial-tpf-long-cadence.fits&quot;</span>);
+
+        <span class="kw">let</span> <span class="ident">result</span> <span class="op">=</span> <span class="ident">header</span>(<span class="kw-2">&amp;</span><span class="ident">data</span>[(<span class="number">2</span><span class="kw-2">*</span><span class="number">2880</span>)..(<span class="number">10</span><span class="kw-2">*</span><span class="number">2880</span>)]);
+
+        <span class="kw">match</span> <span class="ident">result</span> {
+            <span class="ident">IResult</span>::<span class="ident">Done</span>(_, <span class="ident">h</span>) <span class="op">=&gt;</span> <span class="macro">assert_eq</span><span class="macro">!</span>(<span class="ident">h</span>.<span class="ident">data_array_size</span>(), <span class="number">84418560usize</span>),
             <span class="ident">IResult</span>::<span class="ident">Error</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect an error&quot;</span>),
             <span class="ident">IResult</span>::<span class="ident">Incomplete</span>(_) <span class="op">=&gt;</span> <span class="macro">panic</span><span class="macro">!</span>(<span class="string">&quot;Did not expect to be incomplete&quot;</span>)
         }
