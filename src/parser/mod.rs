@@ -8,8 +8,8 @@ use super::types::{Fits, HDU, Header, KeywordRecord, Keyword, Value, BlankRecord
 named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub fits<&[u8], Fits>,
        do_parse!(
            hdu: hdu >>
-               extensions >>
-               (Fits::new(hdu))
+           extensions: extensions >>
+               (Fits::new(hdu, extensions))
        ));
 
 named!(hdu<&[u8], HDU>,
@@ -188,7 +188,7 @@ named!(extensions<&[u8], Vec<HDU> >,
 #[cfg(test)]
 mod tests {
     use nom::{IResult};
-    use super::super::types::{Fits, HDU, Header, KeywordRecord, Keyword, Value, BlankRecord};
+    use super::super::types::{HDU, Header, KeywordRecord, Keyword, Value, BlankRecord};
     use super::{fits, header, keyword_record, keyword, valuecomment, character_string, logical_constant, real, integer, undefined, end_record, blank_record};
 
     #[test]
@@ -199,7 +199,8 @@ mod tests {
 
         match result {
             IResult::Done(tail, f) => {
-                assert_eq!(f, Fits::new(HDU::new(long_cadence_header())));
+                assert_eq!(f.primary_hdu, HDU::new(long_cadence_header()));
+                assert_eq!(f.extensions.len(), 2);
                 assert_eq!(tail.len(), 0);
             },
             IResult::Error(_) => panic!("Did not expect an error"),

@@ -8,13 +8,16 @@ use std::fmt::{Display, Formatter, Error};
 pub struct Fits<'a> {
     /// The primary HDU
     pub primary_hdu: HDU<'a>,
+    /// The extention HDUs
+    pub extensions: Vec<HDU<'a>>,
 }
 
 impl<'a> Fits<'a> {
     /// Create a Fits structure with a given primary header
-    pub fn new(primary_hdu: HDU<'a>) -> Fits<'a> {
+    pub fn new(primary_hdu: HDU<'a>, extensions: Vec<HDU<'a>>) -> Fits<'a> {
         Fits {
             primary_hdu: primary_hdu,
+            extensions: extensions,
         }
     }
 }
@@ -414,8 +417,9 @@ mod tests {
         assert_eq!(
             Fits {
                 primary_hdu: HDU::new(Header::new(vec!())),
+                extensions: vec!(),
             },
-            Fits::new(HDU::new(Header::new(vec!())))
+            Fits::new(HDU::new(Header::new(vec!())), vec!())
         );
     }
 
