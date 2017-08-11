@@ -48,12 +48,12 @@ impl<'a> Header<'a> {
         Header { keyword_records: keyword_records }
     }
 
-    /// Determines the size of the data array following this header.
+    /// Determines the size in bits of the data array following this header.
     pub fn data_array_size(&self) -> u64 {
         if self.is_primary() {
-            lmle(self.primary_data_array_size(), 2880)
+            lmle(self.primary_data_array_size(), 2880*8)
         } else {
-            lmle(self.extention_data_array_size(), 2880)
+            lmle(self.extention_data_array_size(), 2880*8)
         }
     }
 
@@ -74,7 +74,7 @@ impl<'a> Header<'a> {
         (self.integer_value_of(&Keyword::BITPIX).unwrap_or(0i64).abs() * self.naxis_product()) as u64
     }
 
-    fn extention_data_array_size(&self) -> u64 { // TODO correctly implement
+    fn extention_data_array_size(&self) -> u64 {
         (self.integer_value_of(&Keyword::BITPIX).unwrap_or(0i64).abs() *
          self.integer_value_of(&Keyword::GCOUNT).unwrap_or(1i64) *
          (self.integer_value_of(&Keyword::PCOUNT).unwrap_or(0i64) + self.naxis_product())) as u64
@@ -616,7 +616,7 @@ mod tests {
     }
 
     #[test]
-    fn primary_header_should_determine_correct_size_primary_data_array() {
+    fn primary_header_should_determine_correct_data_array_size() {
         let header = Header::new(vec!(
             KeywordRecord::new(Keyword::SIMPLE, Value::Logical(true), Option::None),
             KeywordRecord::new(Keyword::BITPIX, Value::Integer(8i64), Option::None),
@@ -626,14 +626,14 @@ mod tests {
             KeywordRecord::new(Keyword::END, Value::Undefined, Option::None),
         ));
 
-        assert_eq!(header.data_array_size(), 1*2880);
+        assert_eq!(header.data_array_size(), 1*(2880*8));
     }
 
     #[test]
-    fn extension_header_should_determine_correct_size_primary_data_array() {
+    fn extension_header_should_determine_correct_data_array_size() {
         let header = Header::new(vec!(
             KeywordRecord::new(Keyword::XTENSION, Value::CharacterString("BINTABLE"), Option::None),
-            KeywordRecord::new(Keyword::BITPIX, Value::Integer(16i64), Option::None),
+            KeywordRecord::new(Keyword::BITPIX, Value::Integer(128i64), Option::None),
             KeywordRecord::new(Keyword::NAXIS, Value::Integer(2i64), Option::None),
             KeywordRecord::new(Keyword::NAXISn(1u16), Value::Integer(3i64), Option::None),
             KeywordRecord::new(Keyword::NAXISn(2u16), Value::Integer(5i64), Option::None),
@@ -642,6 +642,6 @@ mod tests {
             KeywordRecord::new(Keyword::END, Value::Undefined, Option::None),
         ));
 
-        assert_eq!(header.data_array_size(), 2*2880);
+        assert_eq!(header.data_array_size(), 2*(2880*8));
     }
 }
