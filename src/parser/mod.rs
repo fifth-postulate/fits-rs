@@ -606,7 +606,7 @@ mod tests {
         let result = header(&data[0..(2*2880)]);
 
         match result {
-            IResult::Done(_, h) => assert_eq!(h.data_array_size(), 0u64),
+            IResult::Done(_, h) => assert_eq!(h.data_array_size(), 0usize),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }
@@ -619,7 +619,7 @@ mod tests {
         let result = header(&data[(2*2880)..(10*2880)]);
 
         match result {
-            IResult::Done(_, h) => assert_eq!(h.data_array_size(), 84418560u64),
+            IResult::Done(_, h) => assert_eq!(h.data_array_size(), 84418560usize),
             IResult::Error(_) => panic!("Did not expect an error"),
             IResult::Incomplete(_) => panic!("Did not expect to be incomplete")
         }

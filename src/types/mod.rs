@@ -49,7 +49,7 @@ impl<'a> Header<'a> {
     }
 
     /// Determines the size in bits of the data array following this header.
-    pub fn data_array_size(&self) -> u64 {
+    pub fn data_array_size(&self) -> usize {
         if self.is_primary() {
             lmle(self.primary_data_array_size(), 2880*8)
         } else {
@@ -70,14 +70,14 @@ impl<'a> Header<'a> {
         false
     }
 
-    fn primary_data_array_size(&self) -> u64 {
-        (self.integer_value_of(&Keyword::BITPIX).unwrap_or(0i64).abs() * self.naxis_product()) as u64
+    fn primary_data_array_size(&self) -> usize {
+        (self.integer_value_of(&Keyword::BITPIX).unwrap_or(0i64).abs() * self.naxis_product()) as usize
     }
 
-    fn extention_data_array_size(&self) -> u64 {
+    fn extention_data_array_size(&self) -> usize {
         (self.integer_value_of(&Keyword::BITPIX).unwrap_or(0i64).abs() *
          self.integer_value_of(&Keyword::GCOUNT).unwrap_or(1i64) *
-         (self.integer_value_of(&Keyword::PCOUNT).unwrap_or(0i64) + self.naxis_product())) as u64
+         (self.integer_value_of(&Keyword::PCOUNT).unwrap_or(0i64) + self.naxis_product())) as usize
     }
 
     fn integer_value_of(&self, keyword: &Keyword) -> Result<i64, ValueRetrievalError> {
@@ -395,7 +395,7 @@ impl FromStr for Keyword {
 
 /// For input n and k, finds the least multiple of k such that n <= q*k and
 /// (q-1)*k < n
-fn lmle(n: u64, k: u64) -> u64 {
+fn lmle(n: usize, k: usize) -> usize {
     let (q, r) = (n / k, n % k);
     if r == 0 {
         q * k
@@ -626,7 +626,7 @@ mod tests {
             KeywordRecord::new(Keyword::END, Value::Undefined, Option::None),
         ));
 
-        assert_eq!(header.data_array_size(), 1*(2880*8));
+        assert_eq!(header.data_array_size(), 1*(2880*8) as usize);
     }
 
     #[test]
@@ -642,6 +642,6 @@ mod tests {
             KeywordRecord::new(Keyword::END, Value::Undefined, Option::None),
         ));
 
-        assert_eq!(header.data_array_size(), 2*(2880*8));
+        assert_eq!(header.data_array_size(), 2*(2880*8) as usize);
     }
 }
