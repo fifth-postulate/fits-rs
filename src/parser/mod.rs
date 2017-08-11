@@ -15,7 +15,7 @@ named!(#[doc = "Will parse data from a FITS file into a `Fits` structure"], pub 
 named!(hdu<&[u8], HDU>,
        do_parse!(
            h: header >>
-               take!(h.data_array_size()) >>
+               take!(h.data_array_size()/8) >>
                (HDU::new(h))
        ));
 
