@@ -333,6 +333,8 @@ impl FromStr for Keyword {
             "XTENSION" => Ok(Keyword::XTENSION),
             "ZMAG" => Ok(Keyword::ZMAG),
             input @ _ => {
+                let constructor = Keyword::TZEROn;
+                let special_case = PrefixedKeyword::new("TZERO", &constructor);
                 if input.starts_with("TDIM") { // TODO refactor repetition
                     let (_, representation) = input.split_at(4);
                     match u16::from_str(representation) {
@@ -381,17 +383,43 @@ impl FromStr for Keyword {
                         Ok(n) => Ok(Keyword::TUNITn(n)),
                         Err(_) => Err(ParseKeywordError::NotANumber)
                     }
-                } else if input.starts_with("TZERO") {
-                    let (_, representation) = input.split_at(5);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::TZEROn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
-                    }
+                } else if special_case.handles(input) {
+                    special_case.transform(input)
                 } else {
                     Ok(Keyword::Unprocessed)
                     //Err(ParseKeywordError::UnknownKeyword)
                 }
             }
+        }
+    }
+}
+
+trait KeywordSpecialCase {
+    fn handles(&self, input: &str) -> bool;
+    fn transform(&self, input: &str) -> Result<Keyword, ParseKeywordError>;
+}
+
+struct PrefixedKeyword<'a> {
+    prefix: &'a str,
+    constructor: &'a (Fn(u16) -> Keyword),
+}
+
+impl<'a> PrefixedKeyword<'a> {
+    fn new(prefix: &'a str, constructor: &'a (Fn(u16) -> Keyword)) -> PrefixedKeyword<'a> {
+        PrefixedKeyword { prefix: prefix, constructor: constructor }
+    }
+}
+
+impl<'a> KeywordSpecialCase for PrefixedKeyword<'a> {
+    fn handles(&self, input: &str) -> bool {
+        input.starts_with(self.prefix)
+    }
+
+    fn transform(&self, input: &str) -> Result<Keyword, ParseKeywordError> {
+        let (_, representation) = input.split_at(self.prefix.len());
+        match u16::from_str(representation) {
+            Ok(n) => Ok((self.constructor)(n)),
+            Err(_) => Err(ParseKeywordError::NotANumber)
         }
     }
 }
