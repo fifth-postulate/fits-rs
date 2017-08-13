@@ -382,8 +382,8 @@ impl FromStr for Keyword {
                         Err(_) => Err(ParseKeywordError::NotANumber)
                     }
                 } else {
-                    let constructor = Keyword::TZEROn;
-                    let tuples = vec!(("TZERO", &constructor));
+                    let t_zero_constructor = Keyword::TZEROn;
+                    let tuples = vec!(("TZERO", &t_zero_constructor));
                     let special_cases: Vec<PrefixedKeyword> =
                         tuples
                         .into_iter()
