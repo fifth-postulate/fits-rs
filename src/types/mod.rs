@@ -333,8 +333,6 @@ impl FromStr for Keyword {
             "XTENSION" => Ok(Keyword::XTENSION),
             "ZMAG" => Ok(Keyword::ZMAG),
             input @ _ => {
-                let constructor = Keyword::TZEROn;
-                let special_case = PrefixedKeyword::new("TZERO", &constructor);
                 if input.starts_with("TDIM") { // TODO refactor repetition
                     let (_, representation) = input.split_at(4);
                     match u16::from_str(representation) {
@@ -383,9 +381,19 @@ impl FromStr for Keyword {
                         Ok(n) => Ok(Keyword::TUNITn(n)),
                         Err(_) => Err(ParseKeywordError::NotANumber)
                     }
-                } else if special_case.handles(input) {
-                    special_case.transform(input)
                 } else {
+                    let constructor = Keyword::TZEROn;
+                    let tuples = vec!(("TZERO", &constructor));
+                    let special_cases: Vec<PrefixedKeyword> =
+                        tuples
+                        .into_iter()
+                        .map(|(prefix, constructor)|{ PrefixedKeyword::new(prefix, constructor)})
+                        .collect();
+                   for special_case in special_cases {
+                        if special_case.handles(input) {
+                            return special_case.transform(input)
+                        }
+                    }
                     Ok(Keyword::Unprocessed)
                     //Err(ParseKeywordError::UnknownKeyword)
                 }
