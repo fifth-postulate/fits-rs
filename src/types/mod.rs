@@ -333,70 +333,38 @@ impl FromStr for Keyword {
             "XTENSION" => Ok(Keyword::XTENSION),
             "ZMAG" => Ok(Keyword::ZMAG),
             input @ _ => {
-                if input.starts_with("TDIM") { // TODO refactor repetition
-                    let (_, representation) = input.split_at(4);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::TDIMn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
+                let t_dim_constructor = Keyword::TDIMn;
+                let t_disp_constructor = Keyword::TDISPn;
+                let t_form_constructor = Keyword::TFORMn;
+                let naxis_constructor = Keyword::NAXISn;
+                let t_null_constructor = Keyword::TNULLn;
+                let t_scal_constructor = Keyword::TSCALn;
+                let t_type_constructor = Keyword::TTYPEn;
+                let t_unit_constructor = Keyword::TUNITn;
+                let t_zero_constructor = Keyword::TZEROn;
+                let tuples: Vec<(&str, &(Fn(u16) -> Keyword))> = vec!(
+                    ("TDIM", &t_dim_constructor),
+                    ("TDISP", &t_disp_constructor),
+                    ("TFORM", &t_form_constructor),
+                    ("NAXIS", &naxis_constructor),
+                    ("TNULL", &t_null_constructor),
+                    ("TSCAL", &t_scal_constructor),
+                    ("TTYPE", &t_type_constructor),
+                    ("TUNIT", &t_unit_constructor),
+                    ("TZERO", &t_zero_constructor),
+                );
+                let special_cases: Vec<PrefixedKeyword> =
+                    tuples
+                    .into_iter()
+                    .map(|(prefix, constructor)|{ PrefixedKeyword::new(prefix, constructor)})
+                    .collect();
+                for special_case in special_cases {
+                    if special_case.handles(input) {
+                        return special_case.transform(input)
                     }
-                } else if input.starts_with("TDISP") {
-                    let (_, representation) = input.split_at(5);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::TDISPn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
-                    }
-                } else if input.starts_with("TFORM") {
-                    let (_, representation) = input.split_at(5);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::TFORMn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
-                    }
-                } else if input.starts_with("NAXIS") {
-                    let (_, representation) = input.split_at(5);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::NAXISn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
-                    }
-                } else if input.starts_with("TNULL") {
-                    let (_, representation) = input.split_at(5);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::TNULLn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
-                    }
-                } else if input.starts_with("TSCAL") {
-                    let (_, representation) = input.split_at(5);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::TSCALn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
-                    }
-                } else if input.starts_with("TTYPE") {
-                    let (_, representation) = input.split_at(5);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::TTYPEn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
-                    }
-                }  else if input.starts_with("TUNIT") {
-                    let (_, representation) = input.split_at(5);
-                    match u16::from_str(representation) {
-                        Ok(n) => Ok(Keyword::TUNITn(n)),
-                        Err(_) => Err(ParseKeywordError::NotANumber)
-                    }
-                } else {
-                    let t_zero_constructor = Keyword::TZEROn;
-                    let tuples = vec!(("TZERO", &t_zero_constructor));
-                    let special_cases: Vec<PrefixedKeyword> =
-                        tuples
-                        .into_iter()
-                        .map(|(prefix, constructor)|{ PrefixedKeyword::new(prefix, constructor)})
-                        .collect();
-                   for special_case in special_cases {
-                        if special_case.handles(input) {
-                            return special_case.transform(input)
-                        }
-                    }
-                    Ok(Keyword::Unprocessed)
-                    //Err(ParseKeywordError::UnknownKeyword)
                 }
+                Ok(Keyword::Unprocessed)
+                //Err(ParseKeywordError::UnknownKeyword)
             }
         }
     }
