@@ -52,16 +52,14 @@
 <pre class='rust trait'>pub trait Producer&lt;'b, I, M:&nbsp;'b&gt; {
     fn <a href='#tymethod.apply' class='fnname'>apply</a>&lt;'a, O, E&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;'b mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consumer: &amp;'a mut <a class="trait" href="../nom/trait.Consumer.html" title="trait nom::Consumer">Consumer</a>&lt;I, O, E, M&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;) -&gt; &amp;'a <a class="enum" href="../nom/enum.ConsumerState.html" title="enum nom::ConsumerState">ConsumerState</a>&lt;O, E, M&gt;;
 
-    fn <a href='#method.run' class='fnname'>run</a>&lt;'a: 'b, O, E:&nbsp;'b&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;'b mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consumer: &amp;'a mut <a class="trait" href="../nom/trait.Consumer.html" title="trait nom::Consumer">Consumer</a>&lt;I, O, E, M&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>O&gt; { ... }
+    fn <a href='#method.run' class='fnname'>run</a>&lt;'a: 'b, O, E:&nbsp;'b&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&amp;'b mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;consumer: &amp;'a mut <a class="trait" href="../nom/trait.Consumer.html" title="trait nom::Consumer">Consumer</a>&lt;I, O, E, M&gt;<br>&nbsp;&nbsp;&nbsp;&nbsp;) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;O&gt; { ... }
 }</pre><div class='docblock'><p>The producer wraps a data source, like file or network, and applies a consumer on it</p>
 
 <p>it handles buffer copying and reallocation, to provide streaming patterns.
 it depends on the input type I, and the message type M.
 the consumer can change the way data is produced (for example, to seek in the source) by sending a message of type M.</p>
 </div>
-            <h2 id='required-methods' class='section-header'>
-              <a href='#required-methods'>Required Methods</a>
-            </h2>
+            <h2 id='required-methods'>Required Methods</h2>
             <div class='methods'>
         <h3 id='tymethod.apply' class='method'><span id='apply.v' class='invisible'><code>fn <a href='#tymethod.apply' class='fnname'>apply</a>&lt;'a, O, E&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;'b mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;consumer: &amp;'a mut <a class="trait" href="../nom/trait.Consumer.html" title="trait nom::Consumer">Consumer</a>&lt;I, O, E, M&gt;<br>) -&gt; &amp;'a <a class="enum" href="../nom/enum.ConsumerState.html" title="enum nom::ConsumerState">ConsumerState</a>&lt;O, E, M&gt;</code></span></h3><div class='docblock'><p>Applies a consumer once on the produced data, and return the consumer&#39;s state</p>
 
@@ -77,15 +75,11 @@ the input slice the <code>ConsumerState</code> is referring to.</p>
 <p>To avoid that kind of issue, try to do all the computations on input slices inside the
 <code>Consumer</code> chain</p>
 </div></div>
-            <h2 id='provided-methods' class='section-header'>
-              <a href='#provided-methods'>Provided Methods</a>
-            </h2>
+            <h2 id='provided-methods'>Provided Methods</h2>
             <div class='methods'>
-        <h3 id='method.run' class='method'><span id='run.v' class='invisible'><code>fn <a href='#method.run' class='fnname'>run</a>&lt;'a: 'b, O, E:&nbsp;'b&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;'b mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;consumer: &amp;'a mut <a class="trait" href="../nom/trait.Consumer.html" title="trait nom::Consumer">Consumer</a>&lt;I, O, E, M&gt;<br>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;<a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.reference.html">&amp;</a>O&gt;</code></span></h3><div class='docblock'><p>Applies a consumer once on the produced data, and returns the generated value if there is one</p>
+        <h3 id='method.run' class='method'><span id='run.v' class='invisible'><code>fn <a href='#method.run' class='fnname'>run</a>&lt;'a: 'b, O, E:&nbsp;'b&gt;(<br>&nbsp;&nbsp;&nbsp;&nbsp;&amp;'b mut self, <br>&nbsp;&nbsp;&nbsp;&nbsp;consumer: &amp;'a mut <a class="trait" href="../nom/trait.Consumer.html" title="trait nom::Consumer">Consumer</a>&lt;I, O, E, M&gt;<br>) -&gt; <a class="enum" href="https://doc.rust-lang.org/nightly/core/option/enum.Option.html" title="enum core::option::Option">Option</a>&lt;&amp;O&gt;</code></span></h3><div class='docblock'><p>Applies a consumer once on the produced data, and returns the generated value if there is one</p>
 </div></div>
-        <h2 id='implementors' class='section-header'>
-          <a href='#implementors'>Implementors</a>
-        </h2>
+        <h2 id='implementors'>Implementors</h2>
         <ul class='item-list' id='implementors-list'>
     <li><code>impl&lt;'b, I:&nbsp;<a class="trait" href="https://doc.rust-lang.org/nightly/core/marker/trait.Copy.html" title="trait core::marker::Copy">Copy</a>, M:&nbsp;'b&gt; Producer&lt;'b, I, M&gt; for <a class="struct" href="../nom/struct.ProducerRepeat.html" title="struct nom::ProducerRepeat">ProducerRepeat</a>&lt;I&gt;</code></li>
 <li><code>impl&lt;'x, 'b&gt; Producer&lt;'b, <a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">&amp;'x [</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.u8.html">u8</a><a class="primitive" href="https://doc.rust-lang.org/nightly/std/primitive.slice.html">]</a>, <a class="enum" href="../nom/enum.Move.html" title="enum nom::Move">Move</a>&gt; for <a class="struct" href="../nom/struct.MemProducer.html" title="struct nom::MemProducer">MemProducer</a>&lt;'x&gt;</code></li>
