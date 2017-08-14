@@ -1,4 +1,4 @@
-# fits-rs [![Build Status](https://travis-ci.org/fifth-postulate/fits-rs.svg?branch=master)](https://travis-ci.org/fifth-postulate/fits-rs) [![Crate](https://img.shields.io/crates/v/fits-rs.svg)](https://crates.io/crates/fits-rs)
+# fits-rs [![Build Status](https://travis-ci.org/fifth-postulate/fits-rs.svg?branch=master)](https://travis-ci.org/fifth-postulate/fits-rs) [![Coverage Status](https://coveralls.io/repos/github/fifth-postulate/fits-rs/badge.svg?branch=master)](https://coveralls.io/github/fifth-postulate/fits-rs?branch=master) [![Crate](https://img.shields.io/crates/v/fits-rs.svg)](https://crates.io/crates/fits-rs)
 FITS encoder and decoder in Rust.
 
 Make sure to check out the [documentation][] of this crate.
