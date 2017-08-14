@@ -1,3 +1,8 @@
+## 0.4.0
+### Changes
+* Montoring code coverage with [Coveralls](https://coveralls.io/github/fifth-postulate/fits-rs).
+
+
 ## 0.3.0
 ### Changes
 * Started a [wiki](https://github.com/fifth-postulate/fits-rs/wiki).
