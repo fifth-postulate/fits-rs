@@ -1065,7 +1065,6 @@
         block("macro", "Macros");
         block("struct", "Structs");
         block("enum", "Enums");
-        block("union", "Unions");
         block("constant", "Constants");
         block("static", "Statics");
         block("trait", "Traits");
@@ -1271,7 +1270,7 @@
                     e.innerHTML = labelForToggleButton(true);
                 });
                 onEach(toggle.getElementsByClassName('toggle-label'), function(e) {
-                    e.style.display = 'inline-block';
+                    e.style.display = 'block';
                 });
             }
         }
