@@ -2,7 +2,7 @@
 FITS encoder and decoder in Rust.
 
 Make sure to check out the [documentation][] of this crate. The [build][] can be
-followed as well. 
+followed as well. The [coverage report][coverage] is provided by [coveralls][coverals].
 
 ## FITS
 The *Flexible Image Transport System* ([FITS][fits]) is 
@@ -58,3 +58,5 @@ Unfortunately, some extensions are in binary.
 [fits-homepage]: https://fits.gsfc.nasa.gov/fits_standard.html
 [documentation]: http://fifth-postulate/fits-rs/ 
 [build]: https://travis-ci.org/fifth-postulate/fits-rs
+[coverage]: https://coveralls.io/github/fifth-postulate/fits-rs?branch=master
+[coveralls]: https://coveralls.io/
