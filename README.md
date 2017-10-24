@@ -2,7 +2,7 @@
 FITS encoder and decoder in Rust.
 
 Make sure to check out the [documentation][] of this crate. The [build][] can be
-followed as well. The [coverage report][coverage] is provided by [coveralls][coverals].
+followed as well. The [coverage report][coverage] is provided by [coveralls][coveralls].
 
 ## FITS
 The *Flexible Image Transport System* ([FITS][fits]) is 
