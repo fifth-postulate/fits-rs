@@ -68,7 +68,7 @@ the third argument matches the escaped characters and transforms them.</p>
 <p>WARNING: if you do not use the <code>verbose-errors</code> feature, this combinator will currently fail to build
 because of a type inference error</p>
 
-<pre class="rust rust-example-rendered">
+<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
 <span class="kw">fn</span> <span class="ident">to_s</span>(<span class="ident">i</span>:<span class="ident">Vec</span><span class="op">&lt;</span><span class="ident">u8</span><span class="op">&gt;</span>) <span class="op">-&gt;</span> <span class="ident">String</span> {
   <span class="ident">String</span>::<span class="ident">from_utf8_lossy</span>(<span class="kw-2">&amp;</span><span class="ident">i</span>).<span class="ident">into_owned</span>()
 }
