@@ -56,7 +56,7 @@ types of separators between tokens. Handling it
 manually with nom means wrapping all parsers
 like this:</p>
 
-<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
+<pre class="rust rust-example-rendered">
 <span class="macro">named</span><span class="macro">!</span>(<span class="ident">token</span>, <span class="macro">delimited</span><span class="macro">!</span>(<span class="ident">space</span>, <span class="ident">tk</span>, <span class="ident">space</span>));</pre>
 
 <p>To ease the development of such parsers, you
@@ -114,7 +114,7 @@ and modify them to support a new combinator:
 * wrap any sub parsers with sep!($separator, $submac!($($args)*))
 * reference it in the definition of <code>sep!</code> as follows:</p>
 
-<div class='information'><div class='tooltip ignore'>⚠<span class='tooltiptext'>Be careful when using this code, it's not being tested!</span></div></div><pre class="rust rust-example-rendered ignore">
+<pre class="rust rust-example-rendered">
 (<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>:<span class="ident">expr</span>,  <span class="macro-nonterminal">$</span><span class="macro-nonterminal">separator</span>:<span class="ident">ident</span>, <span class="ident">my_combinator</span> <span class="op">!</span> ($(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">rest</span>:<span class="ident">tt</span>)<span class="kw-2">*</span>) ) <span class="op">=&gt;</span> {
    <span class="macro">wrap_sep</span><span class="macro">!</span>(<span class="macro-nonterminal">$</span><span class="macro-nonterminal">i</span>,
      <span class="macro-nonterminal">$</span><span class="macro-nonterminal">separator</span>,
