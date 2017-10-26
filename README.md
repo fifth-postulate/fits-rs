@@ -25,7 +25,7 @@ read the primary header.
 ```rust
     let args: Vec<String> = env::args().collect();
     let filename = &args[1];
-    let header_index = u64:from_str(&args[2]).expect("should be a non-negative number");
+    let header_index = u64::from_str(&args[2]).expect("should be a non-negative number");
 
     let mut f = File::open(filename).expect("file not found");
     let mut buffer: Vec<u8> = vec!();
