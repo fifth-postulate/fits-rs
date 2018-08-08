@@ -56,7 +56,7 @@ Unfortunately, some extensions are in binary.
 [fits]: https://en.wikipedia.org/wiki/FITS
 [reference]: https://fits.gsfc.nasa.gov/fits_standard.html
 [fits-homepage]: https://fits.gsfc.nasa.gov/fits_standard.html
-[documentation]: http://fifth-postulate/fits-rs/ 
+[documentation]: https://docs.rs/fits-rs/
 [build]: https://travis-ci.org/fifth-postulate/fits-rs
 [coverage]: https://coveralls.io/github/fifth-postulate/fits-rs?branch=master
 [coveralls]: https://coveralls.io/
