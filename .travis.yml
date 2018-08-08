@@ -27,9 +27,6 @@ script:
   - cargo test --verbose
   - cargo doc
 after_success:
-  - |
-      [ $TRAVIS_BRANCH = master ] &&
-      bash deploy-documentation.sh
   - cargo coveralls
 env:
   global:

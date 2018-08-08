@@ -1,7 +1,9 @@
 ## 0.4.0
 ### Changes
 * Montoring code coverage with [Coveralls](https://coveralls.io/github/fifth-postulate/fits-rs).
+* Using `docs.rs` instead of GitHub pages
 
+# Released
 
 ## 0.3.0
 ### Changes
