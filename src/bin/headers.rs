@@ -21,7 +21,7 @@ fn main() {
     let result = fits(&buffer);
 
     match result {
-        IResult::Done(_, trappist1) => {
+        IResult::Done(_, trappist1) => {  //Done produces error[E0599]=variant or associated item not found in `Result<(_, _), nom::Err<_>>`
             let header: &Header = if header_index == 0 {
                 &trappist1.primary_hdu.header
             } else {
